@@ -4,8 +4,8 @@ Stable **0.3.2** · Development **0.4.0-unstable.5**. A personal university plan
 
 | Channel | Open PWA | Android download |
 | --- | --- | --- |
-| **Stable — recommended** | [Setka](https://lev-fedotovskii.github.io/Setka/) | [Latest stable APK](https://github.com/Lev-Fedotovskii/Setka/releases/latest) |
-| **Unstable — testing only** | [Setka Unstable](https://lev-fedotovskii.github.io/Setka/unstable/) | [0.4.0-unstable.5 APK](https://github.com/Lev-Fedotovskii/Setka/releases/download/v0.4.0-unstable.5/Setka-0.4.0-unstable.5.apk) |
+| **Stable — recommended** | [Setka](https://fedotovskiilev.github.io/Setka/) | [Latest stable APK](https://github.com/fedotovskiilev/Setka/releases/latest) |
+| **Unstable — testing only** | [Setka Unstable](https://fedotovskiilev.github.io/Setka/unstable/) | [0.4.0-unstable.5 APK](https://github.com/fedotovskiilev/Setka/releases/download/v0.4.0-unstable.5/Setka-0.4.0-unstable.5.apk) |
 
 Unstable installs separately and starts with its own data. It is not the completed 0.4 release. Stable stays on 0.3.2 while official timetable updates continue; promotion requires the owner's explicit approval. See [channel isolation, testing and release procedure](docs/release-channels.md).
 
@@ -15,7 +15,7 @@ The Unstable functional candidate adds a recoverable study timer and local subje
 
 0.3.1 selects every discovered entry on each new import; uncertain records remain conspicuous and incomplete selected entries require correction before applying. It adds expanded/zoomable Week and landscape printing, automatic first-launch welcome, task details and a manually-created filter, aligned compact forms, and restores the actual 0.2.0 launcher artwork. Stable Android updates retain the 0.3.0 package and signing identity. See [patch decisions and verification](docs/design/DD-008-focused-patch.md).
 
-[Open the PWA](https://lev-fedotovskii.github.io/Setka/) · [Download Android APK](https://github.com/Lev-Fedotovskii/Setka/releases/latest) · [Android builds](https://github.com/Lev-Fedotovskii/Setka/actions/workflows/android.yml)
+[Open the PWA](https://fedotovskiilev.github.io/Setka/) · [Download Android APK](https://github.com/fedotovskiilev/Setka/releases/latest) · [Android builds](https://github.com/fedotovskiilev/Setka/actions/workflows/android.yml)
 
 ## What it does
 
