@@ -11,10 +11,10 @@ http.createServer(async (req, res) => {
     const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
     if(!pathname.startsWith(base)){res.writeHead(404);res.end();return;}
     const requested='/'+pathname.slice(base.length);
-    const isUnstable=requested.startsWith('/unstable/');
-    const name=isUnstable?requested.slice('/unstable'.length):requested;
+    const channel=['unstable','betha'].find(channel=>requested.startsWith(`/${channel}/`));
+    const name=channel?requested.slice(channel.length+1):requested;
     const allowed = name === '/' || name === '/index.html' || name === '/app.js' || name === '/preview.html' || name === '/channel.json' || name === '/sw.js' || name === '/manifest.webmanifest' || /^\/(src|assets|vendor|data)\/[\w./-]+$/.test(name) || name === '/fixtures/mipt/File.xlsx';
-    const target = path.resolve(root, '.' + (isUnstable?'/unstable':'') + (name === '/' ? '/index.html' : name));
+    const target = path.resolve(root, '.' + (channel?`/${channel}`:'') + (name === '/' ? '/index.html' : name));
     if (!allowed || name.split('/').includes('..') || !target.startsWith(root + path.sep)) { res.writeHead(404); res.end(); return; }
     const data = await readFile(target);
     res.writeHead(200, {'Content-Type': types[path.extname(target)] || 'application/octet-stream', 'Cache-Control':'no-cache', 'X-Content-Type-Options':'nosniff'});

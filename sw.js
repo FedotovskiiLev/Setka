@@ -7,6 +7,8 @@ self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;
   const url=new URL(event.request.url);
   if(!url.href.startsWith(self.registration.scope))return;
+  // The root Stable worker must leave child installations to their own workers.
+  if(PREFIX==='setka-'&&['unstable/','betha/'].some(path=>url.href.startsWith(new URL(path,self.registration.scope).href)))return;
   // A cached catalog must never masquerade as a fresh source check.
   if(url.pathname.endsWith('/data/catalog.json')){event.respondWith(fetch(event.request));return;}
   event.respondWith(fetch(event.request).catch(async()=>{

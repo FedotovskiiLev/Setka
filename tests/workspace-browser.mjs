@@ -1,0 +1,98 @@
+import {chromium} from 'playwright';
+import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
+
+const base=process.env.TEST_URL||'http://localhost:4173/';
+const browser=await chromium.launch({headless:true,channel:process.env.BROWSER_CHANNEL||'msedge'});
+const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
+const page=await context.newPage();
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.clock.setFixedTime(new Date('2026-09-06T08:00:00Z'));
+await mkdir('artifacts',{recursive:true});
+try{
+  await page.goto(base+'?view=tasks');
+  if(await page.locator('#dialog[open]').count()){
+    await page.locator('#dialog [data-action=setup-preferences]').click();
+    await page.locator('#setup-form button.primary').click();
+    await page.locator('#dialog[open]').waitFor({state:'detached'});
+    await page.locator('.sidebar [data-nav=tasks]').click();
+  }
+  await page.locator('#task-results').waitFor();
+  const add=async({title,subject,due})=>{
+    await page.locator('[data-action=add-task]').click();
+    await page.locator('#task-form [name=title]').fill(title);
+    await page.locator('#task-form [name=subject]').fill(subject);
+    await page.locator('#task-form [name=minutes]').fill('45');
+    await page.locator('#task-form [name=due]').fill(due);
+    await page.locator('#task-form button.primary').click();
+    await page.locator('#dialog[open]').waitFor({state:'detached'});
+  };
+  await page.locator('[data-action=add-task]').click();
+  await page.locator('#task-form [name=title]').fill('Reminder form must retain this title');
+  await page.locator('#task-form .task-options summary').click();
+  await page.locator('#task-form [name=reminderLead]').selectOption('10');
+  await page.locator('#task-form button.primary').click();
+  await page.locator('#dialog .dialog-feedback[role=status]').waitFor();
+  assert.match(await page.locator('#dialog .dialog-feedback').innerText(),/дату и время срока/);
+  assert.equal(await page.locator('#task-form [name=title]').inputValue(),'Reminder form must retain this title');
+  await page.locator('#dialog [data-action=close]').click();
+  await page.locator('.sidebar [data-nav=more]').click();
+  let catalogRequest=false;
+  await page.route('**/data/catalog.json',async route=>{catalogRequest=true;await new Promise(resolve=>setTimeout(resolve,800));await route.continue();});
+  const catalogResponse=page.waitForResponse(response=>response.url().includes('/data/catalog.json'));
+  await page.locator('[data-action=catalog]').click();
+  await page.locator('.catalog-loading[role=status]').waitFor();
+  await page.locator('#dialog [data-action=close]').click();
+  await catalogResponse;
+  assert.equal(catalogRequest,true);
+  await page.waitForTimeout(100);
+  assert.equal(await page.locator('#dialog[open]').count(),0,'slow catalog response must not reopen a dismissed dialog');
+  await page.locator('.sidebar [data-nav=tasks]').click();
+  await add({title:'Проверить обзор литературы',subject:'Теория вероятностей',due:'2026-09-14'});
+  await add({title:'Подготовить лабораторный отчёт',subject:'Физика',due:'2026-09-09'});
+  const titles=()=>page.locator('#task-results .task-title strong').allTextContents();
+  assert.deepEqual(await titles(),['Подготовить лабораторный отчёт','Проверить обзор литературы']);
+  await page.locator('#task-search').fill('вероятностей');
+  assert.deepEqual(await titles(),['Проверить обзор литературы']);
+  await page.locator('#task-search').fill('обзор литературы');
+  assert.deepEqual(await titles(),['Проверить обзор литературы']);
+  await page.locator('#task-search').fill('неизвестный предмет');
+  await page.getByText('Ничего не найдено').waitFor();
+  await page.locator('#task-search').fill('');
+  let row=page.locator('#task-results .task-row').filter({hasText:'Подготовить лабораторный отчёт'});
+  await row.locator('[data-action=complete-task]').click();
+  await page.locator('#task-results .task-row').filter({hasText:'Подготовить лабораторный отчёт'}).waitFor({state:'detached'});
+  await page.locator('[data-filter=done]').click();
+  row=page.locator('#task-results .task-row').filter({hasText:'Подготовить лабораторный отчёт'});
+  await row.waitFor();
+  await row.locator('[data-action=complete-task]').click();
+  await page.locator('[data-filter=open]').click();
+  await page.locator('#task-results .task-row').filter({hasText:'Подготовить лабораторный отчёт'}).waitFor();
+  await page.locator('#toast').evaluate(e=>e.classList.remove('visible'));
+  await page.screenshot({path:'artifacts/workspace-desktop-1440.png',fullPage:true});
+  await add({title:'Запланировать полное время',subject:'Алгебра',due:'2026-09-16'});
+  await page.locator('.sidebar [data-nav=more]').click();
+  await page.locator('#bounds-form [name=start]').fill('09:00');
+  await page.locator('#bounds-form button[type=submit]').click();
+  await page.goto(base+'?view=tasks&date=2026-09-07');
+  await page.locator('#task-results').waitFor();
+  let planRow=page.locator('#task-results .task-row').filter({hasText:'Запланировать полное время'});
+  await planRow.locator('[data-action=manual-plan]').click();
+  assert.equal(await page.locator('#plan-form [name=date]').inputValue(),'2026-09-07');
+  assert.equal(await page.locator('#plan-form [name=start]').inputValue(),'09:00');
+  await page.locator('#plan-form [name=duration]').fill('45');
+  await page.locator('#plan-form button.primary').click();
+  await page.locator('#dialog[open]').waitFor({state:'detached'});
+  await page.locator('.sidebar [data-nav=tasks]').click();
+  planRow=page.locator('#task-results .task-row').filter({hasText:'Запланировать полное время'});
+  await planRow.locator('[data-action=manual-plan]').waitFor();
+  assert.equal(await planRow.locator('[data-action=manual-plan]').isDisabled(),true,'fully allocated task must not open another plan');
+  for(const [width,height,name] of [[320,740,'mobile-320'],[390,844,'mobile-390'],[844,390,'landscape-844']]){
+    await page.setViewportSize({width,height});
+    await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`horizontal overflow at ${width}x${height}`);
+    await page.screenshot({path:`artifacts/workspace-${name}.png`,fullPage:true});
+  }
+  assert.deepEqual(errors,[]);
+  console.log('PASS workspace: due-date order, subject/title search, no-match state, completion/reopen, responsive screenshots, no page errors.');
+}finally{await browser.close();}

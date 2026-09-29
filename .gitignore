@@ -1,6 +1,4 @@
 node_modules/
-AGENTS.md
-agents.md
 artifacts/
 *.log
 .DS_Store
@@ -10,7 +8,9 @@ dist/
 android/.gradle/
 android/.kotlin/
 _stable/
+_betha/
 .channel-stage/
+.channel-stage-*/
 android/local.properties
 android/**/build/
 *.keystore

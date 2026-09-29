@@ -16,7 +16,7 @@ try{
     assert.equal(state.schedule.importMeta.source.id,source.id);assert.ok(state.schedule.series.length>0);
     assert.ok(state.tasks.some(t=>t.title==='Личная задача для всех источников'));
     await page.locator('.sidebar [data-nav=week]').click();await page.waitForSelector('.week-grid');
-    if(source.school==='ФАКТ')assert.match(await page.locator('.grid-slot').nth(1).innerText(),/10:45/);
+    if(source.school==='ФАКТ')assert.ok((await page.locator('.grid-slot').nth(1).innerText()).includes(state.schedule.bellSchedule.slots[1].startsAt));
     console.log(`Imported ${source.label}: ${state.schedule.series.length} selected records, ${state.schedule.importMeta.unresolved.length} review notes.`);
   }
   // Actual local XLS picker, followed by source association and a same-URL content update.

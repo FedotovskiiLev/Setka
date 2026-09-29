@@ -1,21 +1,16 @@
 # Setka / Сетка
 
-Stable **0.3.2** · Development **0.4.0-unstable.5**. A personal university planner for MIPT. **Today comes first:** what is happening now, what comes next, and what fits into your free time.
+A personal university planner for MIPT. **Today comes first:** your timetable, what comes next, and useful work that fits into free time. No account, backend or cloud synchronization.
 
 | Channel | Open PWA | Android download |
 | --- | --- | --- |
-| **Stable — recommended** | [Setka](https://fedotovskiilev.github.io/Setka/) | [Latest stable APK](https://github.com/fedotovskiilev/Setka/releases/latest) |
-| **Unstable — testing only** | [Setka Unstable](https://fedotovskiilev.github.io/Setka/unstable/) | [0.4.0-unstable.5 APK](https://github.com/fedotovskiilev/Setka/releases/download/v0.4.0-unstable.5/Setka-0.4.0-unstable.5.apk) |
+| **Stable 0.4.0 — recommended** | [Setka](https://fedotovskiilev.github.io/Setka/) | [Latest stable APK](https://github.com/FedotovskiiLev/Setka/releases/latest) |
+| **Betha 0.5.0-betha.1 — candidate** | [Setka Betha](https://fedotovskiilev.github.io/Setka/betha/) | [Betha release and APK](https://github.com/FedotovskiiLev/Setka/releases/tag/v0.5.0-betha.1) |
+| **Unstable 0.5.0-unstable.1 — development** | [Setka Unstable](https://fedotovskiilev.github.io/Setka/unstable/) | [Unstable release and APK](https://github.com/FedotovskiiLev/Setka/releases/tag/v0.5.0-unstable.1) |
 
-Unstable installs separately and starts with its own data. It is not the completed 0.4 release. Stable stays on 0.3.2 while official timetable updates continue; promotion requires the owner's explicit approval. See [channel isolation, testing and release procedure](docs/release-channels.md).
+Paths use capital **Setka**. Each edition keeps separate personal data and installs separately on Android. Existing Stable and Unstable installations retain their identities and receive normal signed updates. Stable and Betha use release snapshots; Unstable follows main. See [channel and release procedure](docs/release-channels.md).
 
-The Unstable functional candidate adds a recoverable study timer and local subject statistics, individual cross-group timetable choices, repeating tasks and editable plans, personal event exceptions, recommendation-window controls, full-screen onboarding and optional Android now/next status. See [behaviour, verification and remaining device checks](docs/design/DD-010-functional-04.md).
-
-0.3.2 fixes repeated mobile Week expansion/collapse, restores the previous normal zoom, fits the expanded timetable to both screen axes and adds continuous slider/two-finger zoom confined to the timetable.
-
-0.3.1 selects every discovered entry on each new import; uncertain records remain conspicuous and incomplete selected entries require correction before applying. It adds expanded/zoomable Week and landscape printing, automatic first-launch welcome, task details and a manually-created filter, aligned compact forms, and restores the actual 0.2.0 launcher artwork. Stable Android updates retain the 0.3.0 package and signing identity. See [patch decisions and verification](docs/design/DD-008-focused-patch.md).
-
-[Open the PWA](https://fedotovskiilev.github.io/Setka/) · [Download Android APK](https://github.com/fedotovskiilev/Setka/releases/latest) · [Android builds](https://github.com/fedotovskiilev/Setka/actions/workflows/android.yml)
+The refreshed workspace adds compact Today, week-day navigation, searchable tasks grouped by deadlines, and clearer settings. The former Unstable features are included: recoverable study timing and local statistics, individual cross-group choices, repeating tasks and editable plans, personal exceptions, recommendation controls and optional Android now/next status. [Product decisions](docs/design/DD-011-stable-workspace.md) · [Verification](docs/verification-05.md) · [Android migration](docs/android-release.md).
 
 ## What it does
 
@@ -88,7 +83,7 @@ See [Capacitor's notification documentation](https://capacitorjs.com/docs/apis/l
 
 ## Android APK
 
-The Android workflow publishes a **stable signed release APK**. See [release and migration instructions](docs/android-release.md).
+The Android workflow publishes **signed Stable, Betha and Unstable APKs**, gated on API 35 and 36 integration checks. See [release and migration instructions](docs/android-release.md).
 
 **Android 0.2.0 users: the stable edition installs alongside the old app, preserving its data.** The old CI debug signing key was not retained; this is not an in-place update. Keep the old app until you have verified a complete backup/restore. If the old export fails, do not uninstall it; the migration guide includes computer-assisted recovery. Future stable updates retain one protected signing key and package identity.
 

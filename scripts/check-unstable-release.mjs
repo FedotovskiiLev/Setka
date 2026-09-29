@@ -1,6 +1,13 @@
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-const {version}=JSON.parse(readFileSync('package.json','utf8'));
-assert.match(version,/^\d+\.\d+\.\d+-unstable\.\d+$/,'Development releases must be explicitly Unstable');
-if(process.env.GITHUB_REF?.startsWith('refs/tags/'))assert.equal(process.env.GITHUB_REF,`refs/tags/v${version}`,'Tag must match package version');
-assert.notEqual(process.env.SETKA_CHANNEL,'stable','This workflow cannot publish Stable');
+const channels=JSON.parse(readFileSync('release-channels.json','utf8'));
+const tag=process.env.GITHUB_REF?.startsWith('refs/tags/')?process.env.GITHUB_REF.slice('refs/tags/'.length):null;
+const taggedChannel=tag?.match(/^v\d+\.\d+\.\d+-(unstable|betha)\.\d+$/)?.[1]||(tag&&/^v\d+\.\d+\.\d+$/.test(tag)?'stable':null);
+if(tag)assert.ok(taggedChannel,'Release tag must use a configured channel version');
+const channel=process.env.SETKA_CHANNEL||taggedChannel||'unstable';
+assert.ok(['stable','unstable','betha'].includes(channel),'Unknown release channel');
+assert.ok(channels[channel],'Unknown release channel');
+if(taggedChannel)assert.equal(channel,taggedChannel,'Tag and build channel must agree');
+assert.match(channels[channel].version,channel==='stable'?/^\d+\.\d+\.\d+$/:new RegExp(`^\\d+\\.\\d+\\.\\d+-${channel}\\.\\d+$`));
+if(tag)assert.equal(tag,`v${channels[channel].version}`,'Tag must match channel version');
+assert.ok(Number.isInteger(channels[channel].versionCode)&&channels[channel].versionCode>0,'Android version code must be positive');

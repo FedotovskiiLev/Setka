@@ -16,26 +16,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout approved Stable application (promotion requires owner approval)
+      - name: Read approved release snapshots
+        id: versions
+        run: |
+          node --input-type=module -e "import fs from 'node:fs'; const c=JSON.parse(fs.readFileSync('release-channels.json')); for(const k of ['stable','betha'])fs.appendFileSync(process.env.GITHUB_OUTPUT,k+'=v'+c[k].version+'\n');"
+      - name: Checkout Stable release snapshot
+        if: github.event_name != 'pull_request'
         uses: actions/checkout@v4
         with:
-          ref: 2bd0b444ab1dc6c0e3abd244b29a68dc338d0593
+          ref: ${{ steps.versions.outputs.stable }}
           path: _stable
+          fetch-depth: 0
+      - name: Checkout Betha release snapshot
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.versions.outputs.betha }}
+          path: _betha
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm ci --prefix _stable
+        if: github.event_name != 'pull_request'
+      - run: npm ci --prefix _betha
+        if: github.event_name != 'pull_request'
       - name: Check official MIPT sources
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-        working-directory: _stable
         run: npm run sources:refresh
-      - name: Build frozen Stable with fresh official data
+      - name: Build release snapshots with the same official data
+        if: github.event_name != 'pull_request'
         run: |
-          cp -a _stable/data/. data/
-          cd _stable
-          npm run build
+          cp -a data/. _stable/data/
+          cp -a data/. _betha/data/
+          (cd _stable && SETKA_CHANNEL=stable npm run build)
+          (cd _betha && SETKA_CHANNEL=betha npm run build)
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
@@ -60,12 +77,17 @@ jobs:
           node tests/feedback-browser.mjs
           node tests/planning-04-browser.mjs
           node tests/individual-browser.mjs
+          node tests/workspace-browser.mjs
       - name: Assemble and verify channel isolation in one browser profile
         env:
           TEST_URL: http://localhost:4175/Setka/
           BROWSER_CHANNEL: chromium
         run: |
-          node scripts/assemble-channels.mjs
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            node scripts/assemble-channels.mjs
+          else
+            node scripts/assemble-channels.mjs _stable _betha
+          fi
           node tests/channels-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
