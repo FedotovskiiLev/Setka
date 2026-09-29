@@ -4,7 +4,7 @@
 
 ## Product decisions
 
-The main loop remains timetable → available interval → task → planned or measured work. The desktop workspace has a restrained green/neutral shell; lesson colors retain consistent semantic meanings in Today and Week. Today puts the compact study action near the heading, adds a seven-day date strip, and keeps the current/next block above the timetable. Mobile layouts preserve the study action beside Today and a bottom navigation clear of the safe area. The academic Week grid, zoom, expanded mode and landscape print remain available.
+The main loop remains timetable → available interval → task → planned or measured work. The desktop workspace has a restrained blue/neutral shell, preserving Setka’s blue brand; lesson colors retain consistent semantic meanings in Today and Week. Today puts the compact study action near the heading, adds a seven-day date strip, and keeps the current/next block above the timetable. Mobile layouts preserve the study action beside Today and a bottom navigation clear of the safe area. The academic Week grid, zoom, expanded mode and landscape print remain available.
 
 Tasks are ordered by deadline date/time, then priority and title. Groups distinguish overdue, today, the next seven days, later and undated work. Search matches all query words across title, subject and notes; the manual-origin filter and reversible completion remain. Presentation ordering does not change allocation or stored estimates. Fully allocated tasks display `В плане`; future manual plans default to the configured day start. Today shows the nearest deadlines in its queue.
 

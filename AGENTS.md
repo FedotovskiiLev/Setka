@@ -2,7 +2,7 @@
 
 ## Product and boundaries
 
-Setka is a local-first university planner: understand today, review the academic week, and fit tasks into real free time. Keep university series, personal events, tasks, planned sessions and measured study time separate. `src/domain/` has no DOM, storage or platform dependencies. A backend, account or LLM needs a concrete product reason.
+Setka is a local-first university planner: understand today, review the academic week, and fit tasks into real free time. Setka’s primary color is blue: keep navigation, primary actions and main accents blue. Semantic lesson colors may vary. Keep university series, personal events, tasks, planned sessions and measured study time separate. `src/domain/` has no DOM, storage or platform dependencies. A backend, account or LLM needs a concrete product reason.
 
 Use `README.md` for running the app; DD-001/DD-002 for import and product semantics; DD-004 for the original implementation limits; DD-010 and DD-011 for the newer behaviour. Read the documents relevant to the change, not the entire documentation tree for routine edits.
 
