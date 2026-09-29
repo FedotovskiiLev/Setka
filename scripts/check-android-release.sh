@@ -29,9 +29,11 @@ fi
 test_runner="$package_id.test/androidx.test.runner.AndroidJUnitRunner"
 adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#systemBarsAndMobileLayouts' "$test_runner" | tee /tmp/setka-layout.txt
 grep -F 'OK (1 test)' /tmp/setka-layout.txt
-adb pull "/sdcard/Android/data/$package_id/files/qa" /tmp/setka-screens
+adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#nativeTimePickerCommitsOnlyAfterFormSubmit' "$test_runner" | tee /tmp/setka-time-picker.txt
+grep -F 'OK (1 test)' /tmp/setka-time-picker.txt
 adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#localImportPlanningPersistenceAndBackgroundNotification' "$test_runner" | tee /tmp/setka-native.txt
 grep -F 'OK (1 test)' /tmp/setka-native.txt
+adb pull "/sdcard/Android/data/$package_id/files/qa" /tmp/setka-screens
 adb install -r android/app/build/outputs/apk/release/app-release.apk
 adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#retainedDataAfterReinstall' "$test_runner" | tee /tmp/setka-reinstall.txt
 grep -F 'OK (1 test)' /tmp/setka-reinstall.txt

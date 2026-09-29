@@ -5,10 +5,12 @@ A personal university planner for MIPT. **Today comes first:** your timetable, w
 | Channel | Open PWA | Android download |
 | --- | --- | --- |
 | **Stable 0.4.0 — recommended** | [Setka](https://fedotovskiilev.github.io/Setka/) | [Latest stable APK](https://github.com/FedotovskiiLev/Setka/releases/latest) |
-| **Betha 0.5.0-betha.1 — candidate** | [Setka Betha](https://fedotovskiilev.github.io/Setka/betha/) | [Betha release and APK](https://github.com/FedotovskiiLev/Setka/releases/tag/v0.5.0-betha.1) |
-| **Unstable 0.5.0-unstable.1 — development** | [Setka Unstable](https://fedotovskiilev.github.io/Setka/unstable/) | [Unstable release and APK](https://github.com/FedotovskiiLev/Setka/releases/tag/v0.5.0-unstable.1) |
+| **Betha 0.5.0-betha.2 — candidate** | [Setka Betha](https://fedotovskiilev.github.io/Setka/betha/) | [Betha release and APK](https://github.com/FedotovskiiLev/Setka/releases/tag/v0.5.0-betha.2) |
+| **Unstable 0.5.0-unstable.2 — development** | [Setka Unstable](https://fedotovskiilev.github.io/Setka/unstable/) | [Unstable release and APK](https://github.com/FedotovskiiLev/Setka/releases/tag/v0.5.0-unstable.2) |
 
-Paths use capital **Setka**. Each edition keeps separate personal data and installs separately on Android. Existing Stable and Unstable installations retain their identities and receive normal signed updates. Stable and Betha use release snapshots; Unstable follows main. See [channel and release procedure](docs/release-channels.md).
+Paths use capital **Setka**. Each edition keeps separate personal data and installs separately on Android. Stable 0.4.0 is currently frozen, including its deployed web files. Unstable receives requested fixes; Betha adds the reviewed settings and study-workspace refinements. Betha uses a release tag; Unstable follows main. See [channel and release procedure](docs/release-channels.md).
+
+The experimental versions add a dismissible clarification notice, corrected desktop settings layout, explicit browser/native time wheels and a richer My study view. Future interactive materials have an extension boundary but are not connected or downloaded; see [DD-012](docs/design/DD-012-issues-and-learning-hub.md).
 
 The refreshed workspace adds compact Today, week-day navigation, searchable tasks grouped by deadlines, and clearer settings. The former Unstable features are included: recoverable study timing and local statistics, individual cross-group choices, repeating tasks and editable plans, personal exceptions, recommendation controls and optional Android now/next status. [Product decisions](docs/design/DD-011-stable-workspace.md) · [Verification](docs/verification-05.md) · [Android migration](docs/android-release.md).
 

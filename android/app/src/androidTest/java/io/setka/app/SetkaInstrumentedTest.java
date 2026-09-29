@@ -3,12 +3,14 @@ package io.setka.app;
 import static org.junit.Assert.*;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -116,6 +118,81 @@ public class SetkaInstrumentedTest {
       shell("input keyevent KEYCODE_HOME");Thread.sleep(700);shell("input swipe 300 1000 300 200 400");Thread.sleep(700);screenshot("launcher");
     } finally {shell("wm density reset");shell("settings put system font_scale 1.0");shell("cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton");}
   }
+  @Test public void nativeTimePickerCommitsOnlyAfterFormSubmit() throws Exception {
+    try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)){
+      until(scenario,"document.querySelector('.now-panel')");
+      js(scenario,"document.querySelector('#dialog').close();document.querySelector('[data-nav=more]').click()");
+      until(scenario,"document.querySelector('#bounds-form')");
+      // Betha displays one settings panel at a time; this also keeps the test on the visible form.
+      js(scenario,"document.querySelector(\".settings-nav a[href='#settings-rhythm']\").click()");
+      until(scenario,"!document.querySelector('#settings-rhythm').hidden&&document.querySelector('#settings-rhythm').getClientRects().length>0&&document.querySelector('#bounds-form [name=start] + .time-picker-button')");
+      String originalStart=(String)new org.json.JSONTokener(js(scenario,"document.querySelector('#bounds-form [name=start]').value")).nextValue();
+      String originalEnd=(String)new org.json.JSONTokener(js(scenario,"document.querySelector('#bounds-form [name=end]').value")).nextValue();
+      js(scenario,"document.querySelector('#bounds-form [name=start]').value='09:00'");
+      String savedState=js(scenario,"localStorage.getItem('setka.v1')");
+
+      js(scenario,"document.querySelector('#bounds-form [name=start] + .time-picker-button').click()");
+      scrollBothPickerWheels();
+      clickPickerButton("Отмена");
+      until(scenario,"!document.querySelector('#bounds-form [name=start] + .time-picker-button').disabled");
+      assertEquals("\"09:00\"",js(scenario,"document.querySelector('#bounds-form [name=start]').value"));
+      assertEquals("Cancellation must not persist settings",savedState,js(scenario,"localStorage.getItem('setka.v1')"));
+
+      js(scenario,"document.querySelector('#bounds-form [name=start] + .time-picker-button').click()");
+      scrollBothPickerWheels();
+      screenshot("native-time-picker");
+      clickPickerButton("Выбрать");
+      until(scenario,"!document.querySelector('#bounds-form [name=start] + .time-picker-button').disabled");
+      until(scenario,"document.querySelector('#bounds-form [name=start]').value!=='09:00'");
+      String chosen=(String)new org.json.JSONTokener(js(scenario,"document.querySelector('#bounds-form [name=start]').value")).nextValue();
+      assertTrue("Native picker must return a 24-hour time: "+chosen,chosen.matches("(?:[01][0-9]|2[0-3]):[0-5][0-9]"));
+      assertNotEquals("Hours wheel must change",9,Integer.parseInt(chosen.substring(0,2)));
+      assertNotEquals("Minutes wheel must change",0,Integer.parseInt(chosen.substring(3)));
+      assertEquals("Wheel choice must remain a form draft",savedState,js(scenario,"localStorage.getItem('setka.v1')"));
+
+      js(scenario,"document.querySelector('#bounds-form').requestSubmit()");
+      final int chosenMinutes=Integer.parseInt(chosen.substring(0,2))*60+Integer.parseInt(chosen.substring(3));
+      until(scenario,"JSON.parse(localStorage.getItem('setka.v1')).settings.dayStart==="+chosenMinutes);
+      js(scenario,"(()=>{const f=document.querySelector('#bounds-form');f.elements.start.value='"+originalStart+"';f.elements.end.value='"+originalEnd+"';f.requestSubmit()})()");
+      final int originalMinutes=Integer.parseInt(originalStart.substring(0,2))*60+Integer.parseInt(originalStart.substring(3));
+      final int originalEndMinutes=Integer.parseInt(originalEnd.substring(0,2))*60+Integer.parseInt(originalEnd.substring(3));
+      until(scenario,"(()=>{const s=JSON.parse(localStorage.getItem('setka.v1')).settings;return s.dayStart==="+originalMinutes+"&&s.dayEnd==="+originalEndMinutes+"})()");
+    }
+  }
+  private void scrollBothPickerWheels() throws Exception {
+    long end=System.currentTimeMillis()+10000;
+    ArrayList<AccessibilityNodeInfo> wheels=new ArrayList<>();
+    while(System.currentTimeMillis()<end){
+      wheels.clear();collectPickerWheels(InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow(),wheels);
+      if(wheels.size()==2)break;
+      Thread.sleep(200);
+    }
+    assertEquals("Expected native hours and minutes wheels: "+accessibilityTree(InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow()),2,wheels.size());
+    for(AccessibilityNodeInfo wheel:wheels)assertTrue("NumberPicker did not scroll: "+wheel.getContentDescription(),wheel.performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD));
+    // NumberPicker animates its scroll; let both wheels settle before reading or closing the dialog.
+    Thread.sleep(700);
+  }
+  private void collectPickerWheels(AccessibilityNodeInfo node,ArrayList<AccessibilityNodeInfo> wheels){
+    if(node==null)return;
+    if(node.getClassName()!=null&&"android.widget.NumberPicker".contentEquals(node.getClassName()))wheels.add(node);
+    for(int i=0;i<node.getChildCount();i++)collectPickerWheels(node.getChild(i),wheels);
+  }
+  private void clickPickerButton(String title) throws Exception {
+    long end=System.currentTimeMillis()+10000;
+    while(System.currentTimeMillis()<end){
+      if(clickNodeWithText(InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow(),title))return;
+      Thread.sleep(200);
+    }
+    fail("Native picker button missing: "+title+"; UI="+accessibilityTree(InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow()));
+  }
+  private boolean clickNodeWithText(AccessibilityNodeInfo node,String title){
+    if(node==null)return false;
+    if(node.getText()!=null&&title.equals(node.getText().toString().trim())){
+      for(AccessibilityNodeInfo target=node;target!=null;target=target.getParent())if(target.isEnabled()&&target.isClickable())return target.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+    }
+    for(int i=0;i<node.getChildCount();i++)if(clickNodeWithText(node.getChild(i),title))return true;
+    return false;
+  }
   private boolean clickSave(android.view.accessibility.AccessibilityNodeInfo node){
     if(node==null)return false;
     String text=node.getText()==null?"":node.getText().toString().trim();
@@ -187,6 +264,15 @@ public class SetkaInstrumentedTest {
       until(scenario,"JSON.parse(localStorage.getItem('setka.v1')).schedule");
       until(scenario,"document.querySelector('#setup-form')");
       js(scenario,"document.querySelector('#setup-form').requestSubmit()");
+      if(packageId.endsWith(".betha")){
+        until(scenario,"document.querySelector('#betha-notification-step')&&document.querySelector('#onboarding-enable')");
+        js(scenario,"document.querySelector('#onboarding-enable').click()");
+        until(scenario,"(()=>{const n=JSON.parse(localStorage.getItem('setka.v1')).notifications;return n.enabled&&n.nowNext})()");
+        until(scenario,"document.querySelector('#onboarding-done')");
+        js(scenario,"document.querySelector('#onboarding-done').click()");
+        until(scenario,"!document.querySelector('#dialog').open");
+        screenshot("betha-onboarding-complete");
+      }
       js(scenario,"document.querySelector('[data-nav=week]').click()");until(scenario,"document.querySelector('.week-grid')");
       String initialScale=js(scenario,"visualViewport.scale");
       for(int cycle=0;cycle<3;cycle++){

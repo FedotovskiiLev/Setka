@@ -1,6 +1,7 @@
-import {startStudy,pauseStudy,resumeStudy,finishStudy,correctStudy,elapsedStudy,studySubjects,studySummary,estimateEvidence} from './domain/study.js';
-import {addDays} from './domain/dates.js';
+import {startStudy,pauseStudy,resumeStudy,finishStudy,correctStudy,elapsedStudy,studySubjects} from './domain/study.js';
 import {completeTask} from './domain/planner.js';
+import {studyDashboard} from './study-dashboard.js';
+import {CHANNEL} from './channel.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clock=ms=>{const sec=Math.floor(ms/1000);return `${Math.floor(sec/3600).toString().padStart(2,'0')}:${Math.floor(sec/60%60).toString().padStart(2,'0')}:${(sec%60).toString().padStart(2,'0')}`;};
 export function studyPanel(state,taskId=''){
@@ -8,7 +9,7 @@ export function studyPanel(state,taskId=''){
   return `<section class="study-panel ${t?'is-active':''}"><div><strong>${t?'Учёба · '+esc(t.subject||'Без предмета'):'Время поучиться?'}</strong><p>${t?`<output data-study-clock>${clock(elapsedStudy(t,Date.now()))}</output><span class="study-running-state"> · ${t.runningSince===null?'пауза':'идёт отсчёт'}</span>`:'Можно начать без задачи и без ограничения времени.'}</p></div><div class="primary-actions">${t?`<button class="secondary" data-study="${t.runningSince===null?'resume':'pause'}">${t.runningSince===null?'Продолжить':'Пауза'}</button><button class="primary" data-study="finish" aria-label="Завершить учёбу"><span class="study-label-long">Завершить</span><span class="study-label-short" aria-hidden="true">Готово</span></button>`:`<button class="primary" data-study="start" data-task="${esc(taskId)}" aria-label="Начать учёбу"><span class="study-label-long">▶ Начать учёбу</span><span class="study-label-short" aria-hidden="true">▶ Учиться</span></button>`}<button class="subtle" data-study="stats" aria-label="Моя статистика"><span class="study-label-long">Моя статистика</span><span class="study-label-short" aria-hidden="true">▥</span></button></div>${t?.recovered?'<p class="section-caption">Таймер восстановлен. Проверьте время при завершении.</p>':''}${t?.clockChanged?'<p class="notice warning">Часы устройства изменились. Проверьте длительность перед сохранением.</p>':''}</section>`;
 }
 export function bindStudyUI({getState,mutate,modal,today,toast}){
-  let sample={wall:Date.now(),mono:performance.now()},editing=null;
+  let sample={wall:Date.now(),mono:performance.now()},editing=null,statsOptions={days:7,offset:0,subject:'',query:''};
   function start(taskId,subject=''){mutate(()=>{startStudy(getState(),{id:crypto.randomUUID(),at:Date.now(),taskId:taskId||null,subject});document.querySelector('#dialog').close();});}
   function startForm(){
     const s=getState();modal('Начать учёбу',`<form id="study-start"><label>Предмет (необязательно)<input name="subject" list="study-subjects" maxlength="180" autofocus placeholder="Например, физика"></label><datalist id="study-subjects">${studySubjects(s).map(x=>`<option value="${esc(x)}">`).join('')}</datalist><label>Задача (необязательно)<select name="task"><option value="">Просто поучиться</option>${s.tasks.filter(t=>t.status==='todo').map(t=>`<option value="${esc(t.id)}">${esc(t.title)}</option>`).join('')}</select></label><p>Обычный таймер без лимита. Паузы не учитываются. Можно закрыть приложение и вернуться; забытый таймер можно исправить или удалить.</p><button class="primary full">Начать</button></form>`);
@@ -24,11 +25,18 @@ export function bindStudyUI({getState,mutate,modal,today,toast}){
       mutate(()=>{const live=getState();if(editing)correctStudy(live,editing,fields);else{const taskId=t.taskId;finishStudy(live,{id:t.id,at:Date.now(),...fields});if(v.has('complete')&&taskId)completeTask(live,taskId,today());}document.querySelector('#dialog').close();toast('Сохранено только на этом устройстве');});};
   }
   function statistics(days=7){
-    const s=getState(),to=today(),from=addDays(to,1-days),summary=studySummary(s,from,to),records=(s.measurements||[]).filter(r=>r.date>=from&&r.date<=to).toReversed();
-    modal('Моя учёба',`<p>Измеренное время за ${days} дней · ${from} — ${to}. Данные остаются на этом устройстве и входят в вашу резервную копию.</p><div class="primary-actions"><button class="secondary" data-study="stats" data-days="7">7 дней</button><button class="secondary" data-study="stats" data-days="30">30 дней</button></div><h3>${Math.round(summary.reduce((n,g)=>n+g.measuredMs,0)/60000)} мин учёбы</h3><p>В предыдущем таком же периоде: ${Math.round(studySummary(s,addDays(from,-days),addDays(from,-1)).reduce((n,g)=>n+g.measuredMs,0)/60000)} мин. Завершено задач за выбранные даты: ${s.tasks.filter(t=>t.status==='done'&&t.completedOn>=from&&t.completedOn<=to).length}. Старые задачи без даты завершения сюда не включены.</p>${summary.map(g=>`<div class="study-summary"><strong>${esc(g.subject)}</strong><span>${Math.round(g.measuredMs/60000)} мин · ${g.records} записей</span><p>${Object.entries(g.progress).map(([unit,n])=>`${Math.round(n*100)/100} ${esc(unit)}`).join(' · ')||'Без отметок прогресса'}</p></div>`).join('')||'<p>Пока нет измерений. Начните, когда вам удобно.</p>'}<p class="section-caption">Запланированные сессии и приблизительные длительности задач не считаются измерениями. Нет обязательной нормы или серии дней.</p><h3>Записи и исправления</h3>${records.map(r=>`<p><button class="text-link" data-study="edit" data-id="${esc(r.id)}">${r.date} · ${esc(r.subject||'Без предмета')} · ${Math.round(r.measuredMs/60000)} мин</button>${r.progress!==null?' · '+r.progress+' '+esc(r.unit):''}${r.note?'<br>'+esc(r.note):''}</p>`).join('')}<details><summary>Оценки на основе измерений</summary><p>Только после трёх записей с одной единицей прогресса. Средняя длительность — подсказка, её можно проверить и вручную перенести в оценку нужной задачи.</p>${summary.flatMap(g=>Object.keys(g.progress).map(unit=>{const evidence=estimateEvidence(s,g.subject,unit);return evidence?`<p>${esc(g.subject)}: ≈ ${Math.round(evidence.minutesPerUnit)} мин / ${esc(unit)}. Основание: ${evidence.records} записей, ${Math.round(evidence.minutes)} мин на ${evidence.progress} ${esc(unit)}. Оценки задач не изменены.</p>`:'';})).join('')}</details>`);
+    if(days!==statsOptions.days)statsOptions.offset=0;statsOptions.days=days;
+    modal('Моя учёба',studyDashboard(getState(),{today:today(),...statsOptions,enhanced:CHANNEL==='betha'}));
+    const root=document.querySelector('#dialog');root.classList.add('study-dashboard-dialog');
+    const refresh=()=>{const input=root.querySelector('#study-record-search'),focused=document.activeElement===input,at=input.selectionStart;statistics(statsOptions.days);if(focused){const next=root.querySelector('#study-record-search');next.focus();try{next.setSelectionRange(at,at);}catch{}}};
+    root.querySelector('#study-subject-filter').onchange=e=>{statsOptions.subject=e.target.value;refresh();};
+    root.querySelector('#study-record-search').oninput=e=>{statsOptions.query=e.target.value;refresh();};
+    root.querySelectorAll('[data-study-period]').forEach(b=>b.onclick=()=>{statsOptions.offset=Math.max(0,Number(b.dataset.studyPeriod));refresh();});
+
   }
   document.addEventListener('click',e=>{const b=e.target.closest('[data-study]');if(!b)return;const s=getState();
     if(b.dataset.study==='start'){if(s.activeStudy){toast('Таймер уже идёт');return;}if(b.dataset.task)start(b.dataset.task);else startForm();}
+    if(b.dataset.study==='start-subject'&&CHANNEL==='betha'){if(s.activeStudy){toast('Таймер уже идёт');return;}start(null,b.dataset.subject==='Без предмета'?'':b.dataset.subject);}
     if(b.dataset.study==='pause')mutate(()=>pauseStudy(s,Date.now()));
     if(b.dataset.study==='resume')mutate(()=>resumeStudy(s,Date.now()));
     if(b.dataset.study==='finish')recordForm();

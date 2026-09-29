@@ -19,6 +19,10 @@ try{
   assert.equal(lesson.time.startsAt,'16:15');assert.equal(lesson.time.endsAt,'18:30');assert.ok(lesson.source.timingClarification);
   // Restore an explicit old-version backup in this disposable browser profile.
   const legacy=structuredClone(current),old=legacy.schedule.series.find(s=>s.id===lesson.id);old.time.startsAt='15:30';delete old.source.timingClarification;delete legacy.schedule.importMeta.clarificationsApplied;
+  await restore(legacy);assert.equal(await page.locator('.timing-notice').count(),1);
+  await page.locator('[data-action=dismiss-timing]').click();await page.reload();
+  assert.equal(await page.locator('.timing-notice').count(),0,'dismissed clarification must stay hidden after reload');
+  assert.equal((await read()).schedule.series.find(s=>s.id===lesson.id).time.startsAt,'15:30','dismissal must not change the lesson');
   await restore(legacy);await page.locator('[data-action=review-timing]').click();assert.equal(await page.locator('#correction-form [name=start]').inputValue(),'16:15');
   assert.match(await page.locator('.correction-source').innerText(),/Гавва А.С.-706 КПМ/);await page.locator('#correction-form .primary').click();
   assert.equal((await read()).schedule.series.find(s=>s.id===lesson.id).time.startsAt,'16:15');

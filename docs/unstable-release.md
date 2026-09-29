@@ -1,11 +1,13 @@
-# Setka 0.5.0-unstable.1 — Unstable
+# Setka 0.5.0-unstable.2 — Unstable
 
-The development channel now shares the reviewed everyday workspace with Stable 0.4.0 and the first Betha candidate. It remains the channel for changes before promotion to Betha or Stable.
+Requested issue fixes and owner feedback, with Stable 0.4.0 left unchanged.
 
-[Open Unstable](https://fedotovskiilev.github.io/Setka/unstable/). Android: **Setka Unstable**, package `io.setka.app.unstable`; existing Unstable users receive an ordinary signed update with their data retained.
+- Desktop More: independent card columns, aligned form fields, source metadata and actions on separate rows.
+- Confirmed timetable clarification can be dismissed permanently for that notice; closing it does not alter the lesson.
+- Explicit wheel time selection in browsers and native Android, preserving keyboard entry, cancel, focus return and form validation.
+- My study: daily measured-time chart, previous periods, subject/note search and editable record history. Measurements stay separate from task estimates and plans.
+- Prepared the My study presentation/domain boundary for future interactive materials; no external material integration or fetching is enabled.
 
-Today has a compact study action and week navigation. Tasks have search, deadline groups and clearer planning state. Settings have section navigation and links to all three editions. Catalog loading/retry and dialog errors are visible. Existing study records, repeating tasks, personal exceptions, source selections/corrections, recommendation controls and native status remain available.
+[Open Unstable](https://fedotovskiilev.github.io/Setka/unstable/). Android: **Setka Unstable**, `io.setka.app.unstable`, signed update retaining the existing installation and data. This is a prerelease, not Latest.
 
-The APK is a GitHub prerelease, never Latest. Stable and Betha keep tagged application snapshots while Unstable follows main; official timetable data continues to refresh for all channels. No automatic personal-data transfer occurs. Use explicit backup/restore to copy work between editions.
-
-Android releases are gated on API 35/36 device integration. Physical battery restrictions and force-stop can interrupt notifications; no dependable closed-PWA reminder is claimed. See `docs/verification-05.md` for verification evidence and `docs/unstable-device-check.md` for phone checks.
+The website deployment verifies that all Stable files match the prior frozen release. Betha adds separate interface refinements on top of this version. See `docs/verification-06.md` for issue evidence and run results. Android publication requires API 35/36 tests; force-stop and device battery policies retain documented constraints.

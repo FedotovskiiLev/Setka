@@ -14,6 +14,8 @@ Carry authorized work through implementation, verification and the requested del
 
 Stable is the default `/Setka/`; Betha is `/Setka/betha/`; Unstable is `/Setka/unstable/`. See `docs/release-channels.md` when changing build, hosting or Android. Preserve existing storage, Android package IDs and signing identity. Stable/Betha publishing uses tagged snapshots; main supplies Unstable. Never commit signing material, personal backups or `.local/`.
 
+Current channel policy: keep deployed Stable 0.4.0 byte-for-byte frozen; all requested fixes go to Unstable, and Betha adds the reviewed optional improvements. Use the verified public Stable archive in `release-snapshots/`, not a rebuild or refreshed feed. My study is being prepared for future interactive materials; do not connect the external project until explicitly requested. DD-012 describes the boundaries.
+
 ## Verification and delegation
 
 Local tests use disposable profiles/fixtures and have no production write access. Run relevant checks, fix regressions and rerun affected checks without asking at each step. Domain/import/allocation changes use `node --test tests/*.test.mjs`. UI changes use the relevant `tests/*-browser.mjs` workflows against a running local server, including desktop and phone sizes. Release validation includes `npm ci`, `npm run build`, channel isolation and Android CI. Rebuild after cached assets change; the service-worker version is content-hashed. Preserve JSZip's vendored licence.
