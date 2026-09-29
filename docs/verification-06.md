@@ -19,4 +19,12 @@ Local verification: npm ci and both experimental builds passed; all 83 domain/im
 
 Before deployment, all 65 public Stable files matched the frozen manifest by size and SHA-256 at the canonical `/Setka/` path. The lowercase `/setka/` path returned 404 during verification; links use the working case-sensitive path.
 
-The first new native wheel test exposed a case-sensitive test locator: Android renders its buttons as `ОТМЕНА`/`ВЫБРАТЬ`. The test now matches their labels without case sensitivity. The picker itself had returned the expected scrolled hour/minute in the failure evidence. Final signed emulator gates and publication are recorded below after completion.
+The first new native wheel test exposed a case-sensitive test locator: Android renders its buttons as `ОТМЕНА`/`ВЫБРАТЬ`. The test now matches their labels without case sensitivity. The picker itself had returned the expected scrolled hour/minute in the failure evidence.
+
+Final preflight evidence on `f31c6c2`:
+
+- [Pages PR gate](https://github.com/FedotovskiiLev/Setka/actions/runs/36588679045): all domain tests, legacy and new browser suites, experimental assembly, exact Stable verification and channel isolation passed.
+- [Unstable signed Android](https://github.com/FedotovskiiLev/Setka/actions/runs/36588684657): API 35 and 36 passed the picker, native layout, import, background reminders, export, reinstall, timer/status and reboot checks.
+- [Betha signed Android](https://github.com/FedotovskiiLev/Setka/actions/runs/36588676467): the same API 35/36 checks passed, including explicit notification/status enablement through the new onboarding.
+
+Release tags `v0.5.0-unstable.2` and `v0.5.0-betha.2` repeat the signed Android gates before publication. Their source differs from this verified preflight only by this evidence record and removing local agent instructions from Git tracking. The release and issue closure records link the final publication runs. Stable has no new tag or APK in this delivery.

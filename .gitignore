@@ -29,3 +29,6 @@ android/app/google-services.json
 **/.obsidian/
 **/.idea/
 
+# Local agent instructions are not part of the published repository.
+[Aa][Gg][Ee][Nn][Tt][Ss].[Mm][Dd]
+
