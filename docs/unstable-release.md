@@ -1,23 +1,11 @@
-0.4 functional test candidate — **Unstable only**. Stable remains v0.3.2; promotion requires the owner's explicit approval.
+# Setka 0.5.0-unstable.1 — Unstable
 
-- PWA: https://lev-fedotovskii.github.io/Setka/unstable/
-- Android: **Setka Unstable**, separately installed as `io.setka.app.unstable`.
-- Stable remains v0.3.2 at https://lev-fedotovskii.github.io/Setka/ and remains the default download.
-- Local study timer with pause/restart recovery, corrections, fractional progress and subject statistics. Measured time stays separate from plans/estimates.
-- Full-screen onboarding and document scroll/gesture locking behind dialogs.
-- On phones, the study action sits beside Today; active timing uses a compact row and now/next is shorter, keeping the timetable visible on the first screen.
-- Minimum recommendation windows and reversible dated/weekly exclusions, independently of occupied time and reminders.
-- Free-window cards disappear when no part meets the recommendation minimum or the window is excluded. This applies to any configured duration; existing plans remain visible.
-- Confirmed Б06-603 Thursday programming start: 16:15. The exact source entry retains its raw text, end time and recurrence; older saved imports receive a reviewable correction with undo, and personal edits take precedence.
-- Subject/deadline/reminder/repeating task controls; moving planned work; personal-event series/occurrence editing and undo.
-- Cross-source lesson selection with personal day/date ranges and own-class hiding, reviewable updates and attendance decisions for overlaps.
-- Correction history and preserved source baselines; ambiguous recurrence requires explicit input.
-- Optional Android now/next status with transition alarms, Stop, quiet hours and reboot handling; native time-selection wheels.
-- Separate storage, notification ledger, cache and installation identity. No automatic personal-data transfer. Android automatic cloud backup is disabled; explicit backup/restore remains available.
-- Stable MIPT source updates continue every six hours while its application stays pinned.
+The development channel now shares the reviewed everyday workspace with Stable 0.4.0 and the first Betha candidate. It remains the channel for changes before promotion to Betha or Stable.
 
-Published only after API 35/36 emulator release checks pass, including coexistence, Stable-data retention, timer recovery and status reboot checks. Physical testing of these new features is still required; the Samsung S23 channel-coexistence confirmation concerned Unstable.1 only. Without exact alarm permission, status transitions may be delayed; force-stop/battery restrictions can interrupt delivery. No closed-PWA notification promise. A forgotten timer is reviewed when finishing. Inherited 0.3.x corrections need their original workbook reopened if no undo baseline exists.
+[Open Unstable](https://fedotovskiilev.github.io/Setka/unstable/). Android: **Setka Unstable**, package `io.setka.app.unstable`; existing Unstable users receive an ordinary signed update with their data retained.
 
-See [functional decisions, verification and remaining device checks](https://github.com/Lev-Fedotovskii/Setka/blob/main/docs/design/DD-010-functional-04.md). Phys Pastel remains the current appearance; GLIWA and the broader visual work are deferred to 0.5.
+Today has a compact study action and week navigation. Tasks have search, deadline groups and clearer planning state. Settings have section navigation and links to all three editions. Catalog loading/retry and dialog errors are visible. Existing study records, repeating tasks, personal exceptions, source selections/corrections, recommendation controls and native status remain available.
 
-[Verification record](https://github.com/Lev-Fedotovskii/Setka/blob/main/docs/verification-04.md) · [Short physical-device procedure](https://github.com/Lev-Fedotovskii/Setka/blob/main/docs/unstable-device-check.md)
+The APK is a GitHub prerelease, never Latest. Stable and Betha keep tagged application snapshots while Unstable follows main; official timetable data continues to refresh for all channels. No automatic personal-data transfer occurs. Use explicit backup/restore to copy work between editions.
+
+Android releases are gated on API 35/36 device integration. Physical battery restrictions and force-stop can interrupt notifications; no dependable closed-PWA reminder is claimed. See `docs/verification-05.md` for verification evidence and `docs/unstable-device-check.md` for phone checks.

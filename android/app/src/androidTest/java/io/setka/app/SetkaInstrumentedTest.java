@@ -55,10 +55,11 @@ public class SetkaInstrumentedTest {
     }
     fail("Status publication timed out: present="+present+", expected title="+title+", actual="+actual);
   }
-  @Test public void unstableStartsIsolated() throws Exception {
+  @Test public void nonstableStartsIsolated() throws Exception {
     Context context=InstrumentationRegistry.getInstrumentation().getTargetContext();
-    assertEquals("io.setka.app.unstable",context.getPackageName());
-    assertEquals("Setka Unstable",context.getApplicationInfo().loadLabel(context.getPackageManager()).toString());
+    String channel=context.getPackageName().endsWith(".betha")?"betha":"unstable";
+    assertEquals("io.setka.app."+channel,context.getPackageName());
+    assertEquals(channel.equals("betha")?"Setka Betha":"Setka Unstable",context.getApplicationInfo().loadLabel(context.getPackageManager()).toString());
     try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)){
       until(scenario,"document.querySelector('.now-panel')");
       assertEquals("true",js(scenario,"!localStorage.getItem('setka.'+'v1')"));
@@ -133,7 +134,8 @@ public class SetkaInstrumentedTest {
     return result.toString();
   }
   private String js(ActivityScenario<MainActivity> scenario, String script) throws Exception {
-    final String channelScript=InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName().contains(".unstable")?script.replace("setka.v1","setka.unstable.v1"):script;
+    String packageId=InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName();
+    final String channelScript=packageId.endsWith(".unstable")?script.replace("setka.v1","setka.unstable.v1"):packageId.endsWith(".betha")?script.replace("setka.v1","setka.betha.v1"):script;
     CountDownLatch latch=new CountDownLatch(1); AtomicReference<String> result=new AtomicReference<>();
     scenario.onActivity(activity->activity.getBridge().getWebView().evaluateJavascript(channelScript,value->{result.set(value);latch.countDown();}));
     assertTrue("JavaScript evaluation timed out",latch.await(15,TimeUnit.SECONDS));return result.get();
@@ -157,7 +159,7 @@ public class SetkaInstrumentedTest {
   @Test public void localImportPlanningPersistenceAndBackgroundNotification() throws Exception {
     Context context=InstrumentationRegistry.getInstrumentation().getTargetContext();
     String packageId=context.getPackageName();
-    assertTrue(packageId.equals("io.setka.app")||packageId.equals("io.setka.app.release")||packageId.startsWith("io.setka.app.unstable"));
+    assertTrue(packageId.equals("io.setka.app.release")||packageId.equals("io.setka.app.unstable")||packageId.equals("io.setka.app.betha"));
     shell("pm grant "+packageId+" android.permission.POST_NOTIFICATIONS");
     shell("appops set "+packageId+" SCHEDULE_EXACT_ALARM allow");
     try(ActivityScenario<MainActivity> scenario=ActivityScenario.launch(MainActivity.class)){
@@ -224,7 +226,7 @@ public class SetkaInstrumentedTest {
       js(scenario,"window.testReloadPending=true;location.reload()");until(scenario,"!window.testReloadPending&&document.querySelector('.now-panel')");
       assertEquals("true",js(scenario,"JSON.parse(localStorage.getItem('setka.v1')).tasks.some(t=>t.title==='Android verification task')"));
       shell("svc wifi enable");shell("svc data enable");
-      js(scenario,"window.testNetworkPoll=setInterval(async()=>{try{const r=await fetch('https://lev-fedotovskii.github.io/Setka/data/catalog.json');window.testOnline=r.ok;if(r.ok)clearInterval(window.testNetworkPoll)}catch(e){window.testError=String(e)}},500)");
+      js(scenario,"window.testNetworkPoll=setInterval(async()=>{try{const r=await fetch('https://fedotovskiilev.github.io/Setka/data/catalog.json');window.testOnline=r.ok;if(r.ok)clearInterval(window.testNetworkPoll)}catch(e){window.testError=String(e)}},500)");
       until(scenario,"window.testOnline");
       js(scenario,"document.querySelector('[data-nav=more]').click();document.querySelector('[data-action=catalog]').click()");
       until(scenario,"document.querySelector('[data-source]')");

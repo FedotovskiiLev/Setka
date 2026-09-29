@@ -1,7 +1,7 @@
 import {readWorkbook} from './import/workbook.js';
 import {inferMipt,applyOverrides,importDiff} from './import/mipt.js';
 import {pendingTimingClarification} from './import/clarifications.js';
-export const PUBLIC_URL='https://lev-fedotovskii.github.io/Setka/';
+export const PUBLIC_URL='https://fedotovskiilev.github.io/Setka/';
 export function sortSources(sources){
   const course=s=>Number.isFinite(Number(s.course))&&Number(s.course)>0?Number(s.course):Infinity;
   const compare=(a,b)=>String(a||'').localeCompare(String(b||''),'ru',{numeric:true});

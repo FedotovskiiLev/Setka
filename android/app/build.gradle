@@ -1,8 +1,11 @@
 apply plugin: 'com.android.application'
-// Main is a development channel. Stable is built only from its pinned release commit.
-def unstableChannel = System.getenv('SETKA_CHANNEL') != 'stable'
-def releaseVersion = new groovy.json.JsonSlurper().parse(file('../../package.json')).version
-if (!unstableChannel && releaseVersion.contains('-')) throw new GradleException('Cannot build a pre-release as Stable')
+def releaseChannel = System.getenv('SETKA_CHANNEL') ?: 'unstable'
+def channels = new groovy.json.JsonSlurper().parse(file('../../release-channels.json'))
+if (!channels.containsKey(releaseChannel)) throw new GradleException('Unknown release channel')
+def releaseVersion = channels[releaseChannel].version
+def releaseVersionCode = channels[releaseChannel].versionCode
+if (releaseChannel == 'stable' && releaseVersion.contains('-')) throw new GradleException('Cannot build a pre-release as Stable')
+if (releaseChannel != 'stable' && !(releaseVersion ==~ /\d+\.\d+\.\d+-${releaseChannel}\.\d+/)) throw new GradleException('Invalid channel release version')
 
 
 android {
@@ -13,7 +16,7 @@ android {
         applicationId "io.setka.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
+        versionCode releaseVersionCode
         versionName releaseVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
@@ -33,19 +36,19 @@ android {
         }
     }
     sourceSets {
-        if (unstableChannel) {
-            release.res.srcDirs += 'src/unstable/res'
-            debug.res.srcDirs += 'src/unstable/res'
+        if (releaseChannel != 'stable') {
+            release.res.srcDirs += "src/${releaseChannel}/res"
+            debug.res.srcDirs += "src/${releaseChannel}/res"
         }
     }
     buildTypes {
         debug {
-            applicationIdSuffix unstableChannel ? '.unstable.debug' : '.debug'
+            applicationIdSuffix releaseChannel == 'stable' ? '.debug' : ".${releaseChannel}.debug"
         }
         release {
             // The unrecoverable CI debug identity cannot update v0.2.0.
             // Side-by-side installation keeps that app and its personal data intact.
-            applicationIdSuffix unstableChannel ? '.unstable' : '.release'
+            applicationIdSuffix releaseChannel == 'stable' ? '.release' : ".${releaseChannel}"
             signingConfig signingConfigs.stableRelease
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

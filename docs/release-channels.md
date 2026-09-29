@@ -1,28 +1,33 @@
-# Stable and Unstable
+# Stable, Betha and Unstable
 
-Stable remains **v0.3.2**, approved commit `2bd0b444ab1dc6c0e3abd244b29a68dc338d0593`.
+The owner authorized promotion and the additional Betha release channel on 2026-09-29. Canonical hosting uses capital **`/Setka/`**; `/setka/` is a different path and currently returns 404. The account is now **FedotovskiiLev**.
 
-| Channel | PWA | Android |
-| --- | --- | --- |
-| Stable (default) | https://lev-fedotovskii.github.io/Setka/ | `io.setka.app.release`, existing certificate |
-| Unstable (development) | https://lev-fedotovskii.github.io/Setka/unstable/ | `io.setka.app.unstable`, label **Setka Unstable** |
+| Channel | PWA | Android identity | Version |
+| --- | --- | --- | --- |
+| Stable, recommended | https://fedotovskiilev.github.io/Setka/ | `io.setka.app.release` | 0.4.0 |
+| Betha, release candidate | https://fedotovskiilev.github.io/Setka/betha/ | `io.setka.app.betha` | 0.5.0-betha.1 |
+| Unstable, development | https://fedotovskiilev.github.io/Setka/unstable/ | `io.setka.app.unstable` | 0.5.0-unstable.1 |
 
-`main` is development. Use short-lived `codex/` branches and ordinary merges, without history rewrites. Pages checks out the approved Stable commit separately, installs its locked dependencies, refreshes MIPT data using its source updater, and builds its application. The same official data is copied to the development build. Only one combined artifact can deploy, serialized through `pages-channels`; feature-branch dispatches and PRs cannot deploy. No application code from main is copied into Stable. The six-hour feed refresh continues. A failing deployment retains the previously deployed site.
+## Snapshots and publishing
 
-The only patch to the frozen service worker is a hosting boundary that ignores `/unstable/` requests. Stable's application bundle is asserted byte-for-byte equal to its independent build. Manifest identity/start URL/scope and service-worker scope are relative to each channel. Unstable uses `setkaUnstable-` caches, deliberately outside even old Stable workers' `setka-` cleanup. Unstable cache lookup and cleanup are restricted to its own cache. Data uses `setka.unstable.v1` and `setka.unstable.notifications.delivered`; Stable's `setka.v1` and notification ledger remain unchanged. Build identity is never taken from imported backups or inferred from paths.
+`release-channels.json` is the source of channel versions and Android version codes. `package.json` identifies the development checkout. A normal `npm run build` produces Unstable. Set `SETKA_CHANNEL=stable` or `betha` for the corresponding build. Unknown channels and mismatched prerelease names are rejected. `channel.json` records the actual checkout commit, version and channel.
 
-These paths share a browser origin: storage quota, site permissions and the browser's **clear all site data** operation are shared. Namespaced application storage and worker/cache boundaries prevent accidental application interference; this is not a security boundary against hostile same-origin code. No channel reads, migrates, clears or automatically copies the other's personal data.
+Pages checks out `v<stable version>` and `v<betha version>` independently, installs locked dependencies, and builds each tagged application. Unstable is built from main. Official MIPT data is refreshed every six hours and copied into all three builds; main application code never replaces a tagged snapshot. One combined artifact is deployed, serialized by `pages-channels`. Failed checks leave the previous site available. Pull requests build all three from the candidate checkout for preview/isolation checks and cannot deploy.
 
-To copy data deliberately: export a full backup in Stable, open **Unstable**, and use its restore file picker and confirmation. This replaces only Unstable's data. Keep a backup of any existing Unstable work first. Going back does not require restoring anything into Stable. Backups containing newer features must not be restored into older Stable blindly.
+`node scripts/assemble-channels.mjs _stable _betha` verifies the independently built metadata/tag commits and assembles Stable at the root plus two child directories. With no arguments it builds all three locally from the current checkout, for testing only. Start `node server.mjs` with `BASE_PATH=/Setka/` and `PORT=4175` to test the combined site.
 
-Android uses separate package IDs, OS data sandboxes and FileProvider authorities. The protected existing certificate signs both packages; the Stable ID/certificate/update path is unchanged. No key is generated. Main's build defaults to Unstable, and a pre-release version is refused when explicitly built as Stable. Version codes increase monotonically. To release an experiment, set `package.json`/lock and Android versionCode, update `docs/unstable-release.md`, then tag `v0.4.0-unstable.N`. Android CI requires the tag to match the package version, runs API 35/36 tests, and publishes with `--prerelease --latest=false` only after both pass. Main pushes produce CI APK artifacts, not stable releases. The public `/releases/latest` must remain v0.3.2.
+To release, update the channel version and increment that channel's Android code, write release notes, verify the candidate, then create the matching `v...` tag. Run the Android workflow on the candidate branch with its channel input before tagging when desired. Both API 35 and 36 checks must pass before a signed APK is published. Stable releases become Latest; Betha and Unstable use prerelease and `latest=false`. Main pushes produce CI artifacts rather than published releases. Do not move published release tags; use a new version for a repair.
 
-**Promotion requires the owner's explicit approval.** Passing tests or finishing 0.4 is not approval. Promotion is a separate reviewed change to the pinned commit, release version and stable build/publishing workflow. No automatic promotion job exists.
+## Personal data and offline boundaries
 
-## Verification
+Stable retains `setka.v1`, `setka.notifications.delivered`, the `setka-` cache prefix and its existing Android package/certificate. Unstable retains `setka.unstable.*` and `setkaUnstable-`. Betha uses `setka.betha.*` and `setkaBetha-`. Manifest identities and worker scopes are relative to each channel; Stable's root worker ignores both child paths. The distinct experimental cache prefixes also survive old Stable workers' `setka-` cleanup. Build identity is never imported from backups or guessed from URL paths.
 
-`tests/channels-browser.mjs` opens both PWAs in the same isolated browser context, creates distinct personal tasks through the UI, checks storage and manifest identities, simulates legacy Stable cache cleanup, verifies offline navigation and persistence, and checks that neither worker removes the other's cache. Android CI installs the published Stable APK, seeds its task through the UI, installs Unstable alongside it, checks its identity and fresh data, exercises planning/export/background notifications, reinstalls Unstable, then verifies Stable's sentinel again. CI is emulator evidence, not physical-device testing.
+These PWAs share an origin, so site permissions, quota and the browser's clear-all-site-data action remain shared. Namespaces prevent application interference, not hostile same-origin code. Android editions have separate OS sandboxes and FileProvider authorities. All signed releases use the retained protected certificate; no key is regenerated.
 
-Physical check: install the Unstable APK **without uninstalling Stable**; confirm two launcher entries, open Stable and check existing tasks, open Unstable and confirm fresh setup, create a test task, then reopen Stable and confirm it is absent. If desired, explicitly restore a Stable backup into Unstable. Record phone/OS/build and results. No reset or data deletion is needed.
+No channel automatically reads or copies another's data. To transfer, export a full backup from the source edition, open the destination, and deliberately restore it after reviewing the replacement confirmation. Back up the destination first. Do not restore newer data into obsolete versions blindly. Keep older Android apps installed until transfer is verified.
 
-2026-09-08: owner reports **“All good. samsung s23”** for the Unstable.1 side-by-side checklist (two entries, fresh Unstable, Stable tasks unchanged after creating an Unstable task). Android version was not supplied. This confirms those checks only, not reboot, battery restrictions or notification lifecycle. Published APK SHA-256: `ce6237972e6acb2f9573f7407cd230a43b84f00d1821545412dbcf415e4415fe`.
+## Evidence
+
+`tests/channels-browser.mjs` exercises all three editions in one isolated browser profile, creates distinct tasks through the UI, checks manifests/storage/ledgers/workers/caches, and verifies offline persistence. Android CI installs published Stable 0.3.2, creates a sentinel, verifies an in-place Stable upgrade or experimental side-by-side install, then checks planning/export, background notifications, reinstall retention, study recovery and reboot status. See `docs/verification-05.md` for the actual run record.
+
+Historical physical evidence: the owner confirmed Unstable.1 coexistence on Samsung S23 on 2026-09-08. OS version was not supplied. It does not establish physical behaviour of the new releases, battery restrictions or all notification lifecycles. Current physical checks are in `docs/unstable-device-check.md`.

@@ -15,6 +15,14 @@ test('cross-group choice hides only selected own series during chosen dates and 
   state.personalSelections[0].excludeDates=[];assert.equal(academicOccurrences(state,'2026-09-08')[0].selectionId,'choice');
   state.personalSelections[0].disabled=true;assert.equal(academicOccurrences(state,'2026-09-08')[0].seriesId,'own');
 });
+test('an odd-week replacement leaves the own lesson visible in even weeks',()=>{
+  const state=newState('2026-09-08');state.groupId='g';state.schedule=schedule('own',[lesson('own')]);
+  const extra=lesson('extra');extra.recurrence.parity='odd';
+  const source=schedule('external',[extra]);
+  addPersonalSelection(state,source,extra,{id:'choice',from:'2026-09-01',to:'2026-12-31',weekdays:[2],dates:[],hideSeriesIds:['own']});
+  assert.deepEqual(academicOccurrences(state,'2026-09-08').map(e=>e.seriesId),['own']);
+  assert.deepEqual(academicOccurrences(state,'2026-09-15').map(e=>e.seriesId),['extra']);
+});
 test('source updates retain selected identity, ranges, choices and missing lessons with warning',()=>{
   const state=newState('2026-09-08');const e=lesson('extra'),sc=schedule('source',[e]);addPersonalSelection(state,sc,e,{id:'choice',from:'2026-09-08',to:'2026-09-30',weekdays:[2],dates:[],hideSeriesIds:[]});
   const next=structuredClone(sc);next.series[0].location='New room';next.series[0].id='new-id';updatePersonalSource(state,'source',next,importDiff(sc,next));assert.equal(state.academicSources.source.schedule.series[0].id,'extra');assert.equal(state.personalSelections[0].to,'2026-09-30');

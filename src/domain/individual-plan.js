@@ -13,12 +13,16 @@ function resolve(schedule,groupId,date){
   return schedule.series.filter(s=>!s.hidden&&(!groupId||s.cohorts.some(c=>c.groupId===groupId))&&date>=s.recurrence.validFrom&&date<=s.recurrence.validTo&&!s.recurrence.excludeDates?.includes(date)&&(s.recurrence.includeDates?.includes(date)||!s.recurrence.datesOnly&&s.recurrence.weekdays.includes(weekday(date))&&(s.recurrence.parity==='all'||s.recurrence.parity===parity))).map(s=>({...s,id:`${s.id}@${date}`,seriesId:s.id,date,start:minute(s.time.startsAt),end:minute(s.time.endsAt),type:'lesson'}));
 }
 export function academicOccurrences(state,date){
-  const selections=(state.personalSelections||[]).filter(s=>selectionApplies(s,date)),hidden=new Set(selections.flatMap(s=>s.hideSeriesIds||[]));
-  const own=resolve(state.schedule,state.groupId,date).filter(e=>!hidden.has(e.seriesId));
+  const selections=(state.personalSelections||[]).filter(s=>selectionApplies(s,date));
   const added=selections.flatMap(selection=>{
     const source=state.academicSources?.[selection.sourceId];if(!source)return [];
     return resolve(source.schedule,null,date).filter(e=>e.seriesId===selection.seriesId).map(e=>({...e,id:`individual:${selection.sourceId}:${e.id}`,selectionId:selection.id,sourceId:selection.sourceId,title:selection.subject||e.title,sourceStale:!!source.missing?.includes(e.seriesId),time:{...e.time,slotNumbers:(state.schedule?.bellSchedule||source.schedule.bellSchedule).slots.filter(b=>minute(b.startsAt)<e.end&&minute(b.endsAt)>e.start).map(b=>b.number)}}));
   });
+  // A replacement only hides the home-group lesson when it actually occurs.
+  // Selection ranges alone do not establish parity, dated occurrences or source availability.
+  const activeSelections=new Set(added.map(e=>e.selectionId));
+  const hidden=new Set(selections.filter(s=>activeSelections.has(s.id)).flatMap(s=>s.hideSeriesIds||[]));
+  const own=resolve(state.schedule,state.groupId,date).filter(e=>!hidden.has(e.seriesId));
   const seen=new Set();
   return [...own,...added].filter(e=>{const key=`${e.sourceId||state.schedule?.importMeta?.source?.id||e.source?.workbook}:${e.source?.fingerprint||e.seriesId}:${date}:${e.time.startsAt}:${e.title}`;if(seen.has(key))return false;seen.add(key);return true;}).sort((a,b)=>a.start-b.start);
 }

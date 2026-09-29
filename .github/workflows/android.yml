@@ -1,21 +1,57 @@
-name: Unstable Android APK
+name: Signed Android channel APKs
 on:
   push:
     branches: [main]
-    tags: ['v*-unstable.*']
+    tags: ['v*']
     paths-ignore: ['docs/**', 'README.md', 'tests/*browser.mjs', '.github/workflows/pages.yml']
   workflow_dispatch:
+    inputs:
+      channel:
+        description: Channel to verify without publishing
+        required: true
+        default: unstable
+        type: choice
+        options: [stable, unstable, betha]
 permissions:
   contents: read
-env:
-  SETKA_CHANNEL: unstable
 jobs:
+  select:
+    runs-on: ubuntu-latest
+    outputs:
+      channel: ${{ steps.channel.outputs.channel }}
+      version: ${{ steps.channel.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Select and validate the channel
+        id: channel
+        env:
+          REQUESTED_CHANNEL: ${{ inputs.channel }}
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            case "$GITHUB_REF_NAME" in
+              *-unstable.*) channel=unstable ;;
+              *-betha.*) channel=betha ;;
+              *) channel=stable ;;
+            esac
+          else
+            channel="${REQUESTED_CHANNEL:-unstable}"
+          fi
+          SETKA_CHANNEL="$channel" node scripts/check-unstable-release.mjs
+          version="$(CHANNEL="$channel" node -e "console.log(require('./release-channels.json')[process.env.CHANNEL].version)")"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
   apk:
+    needs: select
     strategy:
       fail-fast: false
       matrix:
         api: [35, 36]
     runs-on: ubuntu-latest
+    env:
+      SETKA_CHANNEL: ${{ needs.select.outputs.channel }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -32,23 +68,23 @@ jobs:
           java-version: 21
           cache: gradle
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - run: npm ci
-      - name: Reject non-experimental version or mismatched tag
-        run: |
-          node scripts/check-unstable-release.mjs
+      - run: node scripts/check-unstable-release.mjs
       - run: npm test
       - run: npm run build
       - run: npx cap sync android
       - run: chmod +x android/gradlew
-      - name: Restore protected stable signing key
+      - name: Restore protected release signing key
         env:
           KEYSTORE: ${{ secrets.SETKA_KEYSTORE_BASE64 }}
         run: |
           test -n "$KEYSTORE"
           umask 077
           printf '%s' "$KEYSTORE" | base64 --decode > "$RUNNER_TEMP/setka-release.jks"
-      - name: Build separately installed Unstable APK
+      - name: Build signed selected channel APK
         env:
           SETKA_KEYSTORE_PATH: ${{ runner.temp }}/setka-release.jks
           SETKA_STORE_PASSWORD: ${{ secrets.SETKA_STORE_PASSWORD }}
@@ -76,46 +112,14 @@ jobs:
           arch: x86_64
           profile: pixel_2
           disable-animations: true
-          script: |
-            cd android && ./gradlew :app:assembleReleaseAndroidTest -PtestBuildType=release --no-daemon
-            cd _stable && npm ci && npm run build && npx cap sync android
-            chmod +x _stable/android/gradlew
-            cd _stable/android && SETKA_CHANNEL=stable ./gradlew :app:assembleReleaseAndroidTest -PtestBuildType=release --no-daemon
-            curl --fail -L https://github.com/Lev-Fedotovskii/Setka/releases/download/v0.3.2/Setka-0.3.2.apk -o /tmp/setka-stable.apk
-            echo '9d02c8e6b3e346f2dd2d3a07389ceff32c755f96361a9da55226b458f21970f9  /tmp/setka-stable.apk' | sha256sum --check
-            adb install /tmp/setka-stable.apk
-            adb install _stable/android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#seedPreviousStable' io.setka.app.release.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-upgrade-seed.txt
-            grep -F 'OK (1 test)' /tmp/setka-upgrade-seed.txt
-            adb install android/app/build/outputs/apk/release/app-release.apk
-            adb install android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk
-            adb shell pm path io.setka.app.release
-            adb shell pm path io.setka.app.unstable
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#unstableStartsIsolated' io.setka.app.unstable.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-isolation.txt
-            grep -F 'OK (1 test)' /tmp/setka-isolation.txt
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#systemBarsAndMobileLayouts' io.setka.app.unstable.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-layout.txt
-            grep -F 'OK (1 test)' /tmp/setka-layout.txt
-            adb pull /sdcard/Android/data/io.setka.app.unstable/files/qa /tmp/setka-screens
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#localImportPlanningPersistenceAndBackgroundNotification' io.setka.app.unstable.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-native.txt
-            grep -F 'OK (1 test)' /tmp/setka-native.txt
-            adb install -r android/app/build/outputs/apk/release/app-release.apk
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#retainedDataAfterReinstall' io.setka.app.unstable.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-reinstall.txt
-            grep -F 'OK (1 test)' /tmp/setka-reinstall.txt
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#previousStableDataSurvives' io.setka.app.release.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-upgrade.txt
-            grep -F 'OK (1 test)' /tmp/setka-upgrade.txt
-            adb shell am instrument -w -e class 'io.setka.app.SetkaInstrumentedTest#studyRecoveryAndStatusLifecycle' io.setka.app.unstable.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/setka-study-status.txt
-            grep -F 'OK (1 test)' /tmp/setka-study-status.txt
-            adb reboot
-            adb wait-for-device
-            adb shell 'while [ "$(getprop sys.boot_completed)" != "1" ]; do sleep 1; done'
-            adb shell input keyevent 82
-            node scripts/check-status-reboot.mjs
+          script: bash scripts/check-android-release.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: Android-test-results-${{ matrix.api }}
+          name: Android-test-results-${{ needs.select.outputs.channel }}-${{ matrix.api }}
           path: |
             android/app/build/reports/androidTests/
+            /tmp/setka-upgrade-seed.txt
             /tmp/setka-native.txt
             /tmp/setka-reinstall.txt
             /tmp/setka-layout.txt
@@ -127,7 +131,7 @@ jobs:
             /tmp/setka-screens/
       - uses: actions/upload-artifact@v4
         with:
-          name: Setka-Android-APK-${{ matrix.api }}
+          name: Setka-${{ needs.select.outputs.channel }}-Android-APK-${{ matrix.api }}
           path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
       - name: Remove temporary signing material
@@ -135,10 +139,12 @@ jobs:
         run: rm -f "$RUNNER_TEMP/setka-release.jks"
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: apk
+    needs: [select, apk]
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      SETKA_CHANNEL: ${{ needs.select.outputs.channel }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -147,13 +153,29 @@ jobs:
       - run: node scripts/check-unstable-release.mjs
       - uses: actions/download-artifact@v4
         with:
-          name: Setka-Android-APK-35
+          name: Setka-${{ needs.select.outputs.channel }}-Android-APK-35
           path: apk
-      - name: Publish only as a pre-release, never Latest
+      - name: Publish gated signed release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          previous_latest="$(gh api repos/${GITHUB_REPOSITORY}/releases/latest --jq .tag_name)"
           version="${GITHUB_REF_NAME#v}"
           mv apk/app-release.apk "apk/Setka-${version}.apk"
-          gh release create "$GITHUB_REF_NAME" "apk/Setka-${version}.apk" --verify-tag --prerelease --latest=false --title "Setka ${version} (Unstable)" --notes-file docs/unstable-release.md
-          test "$(gh api repos/${GITHUB_REPOSITORY}/releases/latest --jq .tag_name)" = "v0.3.2"
+          notes="docs/${SETKA_CHANNEL}-release.md"
+          test -f "$notes"
+          if [ "$SETKA_CHANNEL" = stable ]; then
+            flags=(--latest)
+            title="Setka ${version}"
+          else
+            flags=(--prerelease --latest=false)
+            title="Setka ${version} (${SETKA_CHANNEL})"
+          fi
+          gh release create "$GITHUB_REF_NAME" "apk/Setka-${version}.apk" --verify-tag "${flags[@]}" --title "$title" --notes-file "$notes"
+          expected_latest="v$(node -p "require('./release-channels.json').stable.version")"
+          actual_latest="$(gh api repos/${GITHUB_REPOSITORY}/releases/latest --jq .tag_name)"
+          if [ "$SETKA_CHANNEL" = stable ]; then
+            test "$actual_latest" = "$expected_latest"
+          else
+            test "$actual_latest" = "$previous_latest" || test "$actual_latest" = "$expected_latest"
+          fi
