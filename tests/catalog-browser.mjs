@@ -10,6 +10,20 @@ try{
   assert.equal(sources.length,8);
   const apply=async()=>{for(const input of await page.locator('#import-form [name=unresolved],#import-form [data-blocked=true]').all())await input.uncheck();await page.locator('#dialog').getByRole('button',{name:'Просмотреть изменения',exact:true}).click();await page.locator('#apply-import').click();await page.waitForTimeout(100);if(await page.locator('#setup-form').count())await page.locator('#setup-form .primary').click();};
   const open=async id=>{await page.locator('.sidebar [data-nav=more]').click();await page.locator('[data-action=catalog]').click();await page.locator(`[data-source="${id}"]`).click();await page.waitForSelector('#import-form');};
+  // A dismissed download must not replace the candidate of a newer import.
+  let releaseDownload,markRequested;
+  const held=new Promise(resolve=>{releaseDownload=resolve;}),requested=new Promise(resolve=>{markRequested=resolve;});
+  const staleUrl='**/'+sources[0].path;
+  await page.route(staleUrl,async route=>{markRequested();await held;await route.continue();});
+  await page.locator('.sidebar [data-nav=more]').click();await page.locator('[data-action=catalog]').click();
+  await page.locator(`[data-source="${sources[0].id}"]`).click();await requested;
+  await page.locator('#dialog [data-action=close]').click();
+  await open(sources[1].id);
+  const staleResponse=page.waitForResponse(response=>response.url().endsWith(sources[0].path));
+  releaseDownload();await staleResponse;await page.waitForTimeout(1000);
+  await apply();
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('setka.unstable.v1')).schedule.importMeta.source.id),sources[1].id,'late dismissed import must not replace the reviewed source');
+  await page.unroute(staleUrl);
   for(const source of sources){
     await open(source.id);await apply();
     const state=await page.evaluate(()=>JSON.parse(localStorage.getItem('setka.unstable.v1')));

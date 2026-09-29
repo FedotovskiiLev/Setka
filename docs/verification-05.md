@@ -17,6 +17,7 @@ Candidate date: 2026-09-29. Stable 0.4.0, Betha 0.5.0-betha.1, Unstable 0.5.0-un
 - Editing a repeating task's duration did not update its future estimate. Explicit duration changes now update the repeat template; title-only edits preserve it.
 - Editing an entire weekly event from a later occurrence could move the series start. Switching to series scope now loads its original date/time and identifies the date as the first event.
 - The live ФАКТ catalog test hardcoded a bell time from an older workbook. Dynamic rendering is now checked against the imported bell schedule; frozen fixture assertions remain unchanged.
+- A late workbook download could replace a newer import candidate after its dialog was dismissed. Import results now belong to their active dialog; a browser regression delays the old download, reviews a different source and verifies that the chosen source is applied.
 
 ## Release evidence
 
