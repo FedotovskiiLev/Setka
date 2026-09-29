@@ -123,6 +123,7 @@ jobs:
             /tmp/setka-native.txt
             /tmp/setka-reinstall.txt
             /tmp/setka-layout.txt
+            /tmp/setka-time-picker.txt
             /tmp/setka-upgrade.txt
             /tmp/setka-isolation.txt
             /tmp/setka-study-status.txt

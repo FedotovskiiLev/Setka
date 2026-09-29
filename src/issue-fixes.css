@@ -1,0 +1,45 @@
+/* Layout fixes shared by the two experimental channels. Stable is a frozen artifact. */
+.settings-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.timing-notice{display:flex;align-items:flex-start;gap:12px}.timing-notice>span{flex:1;min-width:0}.timing-notice>.icon-button{flex:none}
+.settings-column{display:grid;gap:22px;align-content:start;min-width:0}
+.settings-panel{min-width:0;overflow-wrap:anywhere}
+.settings-panel>.secondary,.settings-panel>.file-button{display:flex;width:100%;margin:10px 0}
+.source-status{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:18px 0;margin:16px 0}
+.source-status p{margin:0}.source-status small{display:block}.source-status .secondary,.source-status .subtle{margin:0;max-width:100%;text-align:left}
+.settings-panel .rule-row span{min-width:0}.settings-panel .rule-row input[type=checkbox]{flex:none}
+.settings-panel form .form-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+.time-picker-button{font-size:11px;align-self:flex-start;text-align:left;padding:8px 0;color:var(--blue);text-decoration:underline;text-underline-offset:3px}
+.settings-panel form>.secondary{margin:6px 0 12px;max-width:100%}
+.settings-panel details{margin:14px 0}.settings-panel details summary{line-height:1.6}
+/* Betha adds a focused settings workspace; Unstable keeps its original controls. */
+.settings-finder{max-width:650px;margin-bottom:24px}.settings-finder>label{display:block;font-size:12px;font-weight:600;margin-bottom:8px}
+.settings-search-row{display:flex;gap:8px}.settings-search-row input{flex:1;min-width:0;padding:12px 14px;border:1px solid #b6c7de;border-radius:7px;background:white;color:inherit}
+#settings-results{font-size:12px;color:var(--muted);min-height:20px;margin-top:8px}
+.settings-workspace{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;align-items:start}
+.settings-workspace>.settings-nav{display:flex;flex-direction:column;gap:6px;position:sticky;top:20px;margin:0}
+.settings-workspace>.settings-nav a{border-color:transparent;background:transparent;line-height:1.5}
+.settings-workspace>.settings-nav a[aria-current]{background:var(--blue);color:white}
+.settings-workspace>.settings-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;min-width:0}
+.settings-workspace .settings-panel{padding:28px}.settings-workspace .settings-panel form{max-width:640px}
+.settings-workspace [hidden],.settings-finder [hidden]{display:none!important}
+.settings-empty{padding:28px;line-height:1.7}
+/* Explicit wheel picker with keyboard and screen-reader controls. */
+dialog.time-picker-dialog{position:fixed;inset:0;margin:auto;width:min(360px,calc(100vw - 24px));max-width:none;max-height:calc(100dvh - 24px);height:fit-content;padding:24px;border:1px solid var(--line);border-radius:14px;background:#f9fafc;color:#29384c;overflow:auto;overscroll-behavior:contain}
+dialog.time-picker-dialog::backdrop{background:#14243880}dialog.time-picker-dialog h2{font-size:21px;line-height:1.4;margin:0}
+.time-wheels{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px}.wheel-column{position:relative;min-width:0}.wheel-column>p{text-align:center;font-size:12px;color:var(--muted);margin-bottom:8px}
+.time-wheel{height:220px;overflow-y:auto;overscroll-behavior:contain;scroll-snap-type:y mandatory;padding:88px 0;scrollbar-width:none;border-radius:8px;background:#eef2f7;touch-action:pan-y}
+.time-wheel::-webkit-scrollbar{display:none}.wheel-option{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:25px;line-height:1;font-variant-numeric:tabular-nums;color:#76869c;cursor:pointer}
+.wheel-option[aria-selected=true]{color:var(--blue);font-weight:650;background:#dce6f4;border-radius:6px}
+.wheel-value{display:block;text-align:center;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;margin:12px 0}.wheel-actions{display:flex;gap:12px}.wheel-actions button{flex:1}
+@media(max-width:1000px){.settings-grid{grid-template-columns:minmax(0,1fr)}.settings-column{gap:18px}.settings-workspace{grid-template-columns:minmax(0,1fr);gap:12px}.settings-workspace>.settings-nav{position:static;flex-direction:row;overflow:auto}.settings-workspace>.settings-nav a{white-space:nowrap;flex-shrink:0}}
+@media(max-width:650px){.settings-workspace .settings-panel{padding:18px}.settings-finder{margin-bottom:12px}.settings-workspace>.settings-nav{padding:0 0 10px;margin:0}.settings-panel .rule-row{gap:8px}.settings-panel .rule-row button{padding:8px 4px}}
+@media(max-height:500px){dialog.time-picker-dialog{padding:14px 20px}.time-wheels{margin-top:4px}.time-wheel{height:132px;padding:44px 0}.wheel-value{margin:4px 0}.time-picker-dialog>.section-caption{display:none}}
+@media(prefers-reduced-motion:reduce){.time-wheel{scroll-behavior:auto}}
+/* My study: measurements, history and subject progress share one readable view. */
+#dialog.study-dashboard-dialog{width:min(920px,calc(100vw - 32px));max-width:none}
+.study-dashboard h3{margin-top:26px}.study-period{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.study-period-arrows{display:flex;gap:6px}
+.study-filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:16px;margin:18px 0}.study-filters label{font-size:12px;display:flex;flex-direction:column;gap:8px;min-width:0}.study-filters input,.study-filters select{width:100%;min-width:0;padding:12px;border:1px solid #b6c7de;border-radius:6px;background:white;color:inherit}
+.study-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.study-metrics>div{display:flex;flex-direction:column;gap:6px;padding:16px;background:#e8eef7;border-radius:8px}.study-metrics strong{font-size:26px;font-variant-numeric:tabular-nums;color:var(--blue)}.study-metrics span{font-size:11px;color:var(--muted);line-height:1.5}
+.study-chart-scroll{overflow-x:auto;padding-bottom:8px}.study-chart{display:grid;grid-template-columns:repeat(var(--days),minmax(18px,1fr));gap:6px;min-width:calc(var(--days)*24px)}.study-day{text-align:center;min-width:0}.study-bar-track{height:110px;display:flex;align-items:flex-end;justify-content:center;border-bottom:1px solid var(--line)}.study-bar-track i{display:block;width:70%;max-width:44px;min-width:8px;background:#375e91;border-radius:5px 5px 0 0}.study-day small{display:block;font-size:10px;color:var(--muted);margin-top:8px}
+.study-record-list{display:grid;margin-top:12px}.study-record{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;padding:16px 4px;color:inherit;width:100%}.study-record:hover{background:#eaf0f8}.study-record>span{min-width:0;display:flex;flex-direction:column;gap:6px}.study-record strong{font-size:14px;overflow-wrap:anywhere}.study-record small,.study-record-note{font-size:12px;color:var(--muted);line-height:1.5;overflow-wrap:anywhere}.study-record b{font-size:13px;white-space:nowrap;color:var(--blue)}.study-evidence{margin-top:24px;font-size:13px;line-height:1.6}
+@media(max-width:650px){#dialog.study-dashboard-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);padding:18px}.study-filters{grid-template-columns:1fr}.study-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.study-metrics>div{padding:14px}.study-record{gap:12px}.study-period .secondary{padding:8px 13px}}

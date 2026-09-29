@@ -1,13 +1,15 @@
-# Setka 0.5.0-betha.1 — Betha
+# Setka 0.5.0-betha.2 — Betha
 
-Betha is the additional release-candidate channel requested by the owner. Its first release carries the reviewed workspace and full planner feature set shared with the new Stable baseline; later candidates are promoted here deliberately from Unstable.
+All Unstable.2 fixes, plus reviewed interface improvements. Stable 0.4.0 is unchanged.
 
-[Open Betha](https://fedotovskiilev.github.io/Setka/betha/).
+- More becomes a focused settings workspace with section navigation and search, including queries such as “тихие часы”.
+- Switching sections retains unsaved fields; ordinary app re-renders also preserve settings drafts.
+- Subject summaries in My study can start a timer directly. An existing timer prevents accidental duplicates.
+- A three-step introduction shows an example day, explains the core features, configures the user's rhythm and explicitly offers notifications. Android can enable reminders and the now/next status together; refusal and setting up later remain available.
+- Subtle view, dialog, card and button motion makes navigation easier to follow. Reduced-motion preferences disable animation, and background refreshes do not replay entrance effects.
+- Includes the desktop layout repair, dismissible timetable clarification, browser/native time wheels and expanded daily/period/subject study history from Unstable.
+- The future interactive-learning boundary is prepared, with no materials integration, account, scores or external data loading yet.
 
-- Signed Android APK: **Setka Betha**, package `io.setka.app.betha`.
-- Installs alongside Stable and Unstable with separate personal data.
-- Timetable review, tasks and planning, repeating events/tasks, study timer/statistics, individual lesson choices and optional Android status.
-- Separate PWA storage, notification ledger, cache and installation scope.
-- Move data only by explicitly exporting and restoring a complete backup.
+[Open Betha](https://fedotovskiilev.github.io/Setka/betha/). Signed Android APK: **Setka Betha**, `io.setka.app.betha`. Existing Betha installations update normally; personal data remains separate from other editions.
 
-This is a GitHub prerelease and does not replace the Latest Stable download. Android publication requires both API 35 and 36 integration checks. Physical-phone battery-policy and permission behaviour still needs device-specific checking; closed-PWA reminders are not guaranteed.
+This is a GitHub prerelease and does not replace Latest Stable. Publication requires Android API 35/36 integration checks. See `docs/verification-06.md` for actual evidence, including separately attributed owner phone feedback. PWA background reminders are not guaranteed.

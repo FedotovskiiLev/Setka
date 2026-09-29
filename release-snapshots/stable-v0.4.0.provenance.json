@@ -1,0 +1,19 @@
+{
+  "source": "GitHub Pages artifact from successful workflow run",
+  "repository": "FedotovskiiLev/Setka",
+  "runId": 36577454224,
+  "artifactId": 11037718940,
+  "artifactZipSha256": "495a8ed83c72fd0445748d8db69a314a7a990e35e81f1e1bf6f3e5af1df323f0",
+  "artifactPath": "artifact.tar",
+  "stableTag": "v0.4.0",
+  "stableCommit": "308a389fdebcdb287e41ceb166d11b8e3915fc29",
+  "publicUrl": "https://fedotovskiilev.github.io/Setka/",
+  "publicVerifiedFiles": [
+    "channel.json",
+    "sw.js"
+  ],
+  "excludedChildScopes": [
+    "unstable/",
+    "betha/"
+  ]
+}

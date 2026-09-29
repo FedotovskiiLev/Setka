@@ -1,0 +1,71 @@
+/* Loaded only when Betha mounts its motion layer. All motion uses paint/compositor properties. */
+@keyframes betha-dialog-enter{
+  from{opacity:.84;transform:translate3d(0,8px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+body.betha-motion #dialog[open]:not(.onboarding-flow){
+  animation:betha-dialog-enter 230ms cubic-bezier(.2,.7,.2,1);
+}
+body.betha-motion .betha-intro,
+body.betha-motion .onboarding-flow #setup-form,
+body.betha-motion #betha-notification-step{animation:betha-dialog-enter 300ms cubic-bezier(.2,.7,.2,1)}
+body.betha-motion .onboarding-features article{animation:betha-dialog-enter 380ms cubic-bezier(.2,.7,.2,1) backwards}
+body.betha-motion .onboarding-features article:nth-child(2){animation-delay:45ms}
+body.betha-motion .onboarding-features article:nth-child(3){animation-delay:90ms}
+
+body.betha-motion .primary,
+body.betha-motion .secondary,
+body.betha-motion .nav-item,
+body.betha-motion .study-record,
+body.betha-motion .study-summary button{
+  transition:transform 150ms cubic-bezier(.2,.7,.2,1),box-shadow 180ms ease,background-color 180ms ease;
+}
+
+@media(hover:hover){
+  body.betha-motion .primary:not(:disabled):hover,
+  body.betha-motion .secondary:not(:disabled):hover,
+  body.betha-motion .study-record:not(:disabled):hover,
+  body.betha-motion .study-summary button:not(:disabled):hover{
+    transform:translate3d(0,-2px,0);
+    box-shadow:0 5px 15px #172f501c;
+  }
+  body.betha-motion .nav-item:not(:disabled):hover{
+    transform:translate3d(0,-1px,0);
+  }
+}
+
+body.betha-motion .primary:not(:disabled):active,
+body.betha-motion .secondary:not(:disabled):active,
+body.betha-motion .nav-item:not(:disabled):active,
+body.betha-motion .study-record:not(:disabled):active,
+body.betha-motion .study-summary button:not(:disabled):active{
+  transform:translate3d(0,1px,0) scale(.99);
+  box-shadow:none;
+  transition-duration:70ms;
+}
+
+@media(max-width:650px){
+  body.betha-motion #dialog[open]:not(.onboarding-flow){animation-duration:190ms}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.betha-motion .betha-intro,
+  body.betha-motion .onboarding-flow #setup-form,
+  body.betha-motion #betha-notification-step,
+  body.betha-motion .onboarding-features article,
+  body.betha-motion #dialog[open]:not(.onboarding-flow),
+  body.betha-motion .primary,
+  body.betha-motion .secondary,
+  body.betha-motion .nav-item,
+  body.betha-motion .study-record,
+  body.betha-motion .study-summary button{
+    animation:none!important;
+    transition:none!important;
+    transform:none!important;
+  }
+}
+
+@media print{
+  body.betha-motion #dialog[open]:not(.onboarding-flow){animation:none}
+}

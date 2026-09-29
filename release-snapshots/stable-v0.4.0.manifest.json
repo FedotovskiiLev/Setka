@@ -1,0 +1,332 @@
+{
+  "channel": "stable",
+  "version": "0.4.0",
+  "archiveSha256": "275f735559426996c93450047e15b30bb9fe8091e5e1d9f5f7a2cea105f87155",
+  "files": [
+    {
+      "path": ".nojekyll",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "app.js",
+      "sha256": "6568b3f5bb064fbd1c584f5648c302c5fd9c7e3d0513174ebda48a71d47ae23c",
+      "size": 1926888
+    },
+    {
+      "path": "assets/icon-192.png",
+      "sha256": "58cda3b1ba8d0594eda3475e888d74c242fde25b06674f70837f6e2f60ee866f",
+      "size": 3718
+    },
+    {
+      "path": "assets/icon-512.png",
+      "sha256": "c154372014b2156bb1cee5af700bf74f092b6022311a5c7c74626f373e212e59",
+      "size": 12715
+    },
+    {
+      "path": "assets/icon.svg",
+      "sha256": "f00c852adc4002b16e2038771d041aa953cb01da274d41894a4d9a479803ffa4",
+      "size": 367
+    },
+    {
+      "path": "channel.json",
+      "sha256": "9de08ad64fc2734d193f19fbaf47a57ed1de5e7c621f21334a80b1e95b173fb9",
+      "size": 90
+    },
+    {
+      "path": "data/catalog.json",
+      "sha256": "34325de463d8d3a33db3599f5b0150710b379bf61cb95fe0ed342d9bd51f8b53",
+      "size": 8011
+    },
+    {
+      "path": "data/workbooks/mipt-192b74a3774ec7da-3354bb93705e709e.xlsx",
+      "sha256": "3354bb93705e709e62ffd09fc65997e55bea5283c8e83809005c728456ba1a78",
+      "size": 91960
+    },
+    {
+      "path": "data/workbooks/mipt-192b74a3774ec7da-898b7489542efc4c.xlsx",
+      "sha256": "898b7489542efc4c51504fd4a05b24effdfb1e62586fa0cf35c026a93d9eb352",
+      "size": 92031
+    },
+    {
+      "path": "data/workbooks/mipt-32b7b890afb5eee4-d55f93488d1e45e2.xls",
+      "sha256": "d55f93488d1e45e2a5ba0c72a5e852f50970cd6b5f7863cd3d051366c0f18bab",
+      "size": 115200
+    },
+    {
+      "path": "data/workbooks/mipt-417c483909021295-046e1c9798d4dbe6.xls",
+      "sha256": "046e1c9798d4dbe6b05f4f4d99615023375afadd1b031c1a078d3b0c316fcab0",
+      "size": 195072
+    },
+    {
+      "path": "data/workbooks/mipt-417c483909021295-14e075293c19602d.xls",
+      "sha256": "14e075293c19602d2c6a79069727968fb8f83fb0afc33efec2a0ec480ea520a1",
+      "size": 195072
+    },
+    {
+      "path": "data/workbooks/mipt-70716429b751b00e-2fee9c5c3f59f293.xls",
+      "sha256": "2fee9c5c3f59f29323c6baf1f0e06a317fef0553d41b6eba203dafb73e8f437c",
+      "size": 272896
+    },
+    {
+      "path": "data/workbooks/mipt-70716429b751b00e-8f4261545a797ca3.xls",
+      "sha256": "8f4261545a797ca32d12cc835f080f0459b8cb2d73c657fe3502bd6ae8d71f5e",
+      "size": 273920
+    },
+    {
+      "path": "data/workbooks/mipt-d22c69cdb4e92dad-03168d535d282e1d.xls",
+      "sha256": "03168d535d282e1ded5c5615c966123f4a3c1ecc92e47d77a5d42bb59f570f1c",
+      "size": 55808
+    },
+    {
+      "path": "data/workbooks/mipt-d22c69cdb4e92dad-acf280952ba4eefc.xls",
+      "sha256": "acf280952ba4eefced0bc2950df3dda1f8da0b15acbdf22b9808843790357080",
+      "size": 53760
+    },
+    {
+      "path": "data/workbooks/mipt-d2d1adf1e5b93076-37096429e76de801.xls",
+      "sha256": "37096429e76de80168d919affaa91b55e039516b4c214a2b5b375e2c273db501",
+      "size": 171520
+    },
+    {
+      "path": "data/workbooks/mipt-d2d1adf1e5b93076-3f06234d62354c64.xls",
+      "sha256": "3f06234d62354c64f48c58933d5d438c9fd1af5a2ff80afc4482ee7cf74e0d67",
+      "size": 170496
+    },
+    {
+      "path": "data/workbooks/mipt-d70960a4648db112-98dd4de87b0f6fed.xls",
+      "sha256": "98dd4de87b0f6fedeaf2d7d8d39deb5b0529a69f9ba18df72da7a9ae6ba59f55",
+      "size": 80896
+    },
+    {
+      "path": "data/workbooks/mipt-de5ba22b48a28779-b922e54f5d246d2c.xlsx",
+      "sha256": "b922e54f5d246d2cfc85c008b4be65de1c1ca2a2d261185a88bcb6bb663c80c7",
+      "size": 101237
+    },
+    {
+      "path": "data/workbooks/mipt-de5ba22b48a28779-cf8146f688bd0641.xlsx",
+      "sha256": "cf8146f688bd0641d2687ccb90a2daa48defd142f304a6144b7247cdcf2b3957",
+      "size": 102314
+    },
+    {
+      "path": "fixtures/mipt/File.xlsx",
+      "sha256": "24a74a020339dfca3563a8b7a83938ab5928d6f88f9ee8fe2b3a8bf80aa659cf",
+      "size": 101178
+    },
+    {
+      "path": "index.html",
+      "sha256": "05c75735b27ed0c4ecddc69ba7bf8603214c3ad21b130295fdb4bbe0fae0192d",
+      "size": 1027
+    },
+    {
+      "path": "manifest.webmanifest",
+      "sha256": "0565f0831ee0c29e8634e5435b5bfef66f55373d042e5eb21b85ae1953be5c7d",
+      "size": 520
+    },
+    {
+      "path": "preview.html",
+      "sha256": "77533708ed33eb71ac7018709db09dc6d56c5acb020aeb32cf5bad9d76980821",
+      "size": 1270
+    },
+    {
+      "path": "src/app.js",
+      "sha256": "a996a998c9f6fb56114bdc0f21dd848be2d267b7414fe97da0b385c0574e477e",
+      "size": 92154
+    },
+    {
+      "path": "src/channel.js",
+      "sha256": "5ae66a1c0755b2d746fedca76d4277e8f61343278fe964737617ce2fd4cd7569",
+      "size": 486
+    },
+    {
+      "path": "src/domain/correction-history.js",
+      "sha256": "60f511a9de642b84d8251ce89900906ac3d70c71f98608274a82dcc3e2f47455",
+      "size": 1694
+    },
+    {
+      "path": "src/domain/dates.js",
+      "sha256": "057a13dbb7a89030b7532aa046cf49d562985e533e71ee07573f813371c51406",
+      "size": 1530
+    },
+    {
+      "path": "src/domain/followups.js",
+      "sha256": "47e2d24b0adee8f26ae8539dd16aa9f2934e1329da8ef06bd3a8b4a8824ad714",
+      "size": 1548
+    },
+    {
+      "path": "src/domain/individual-plan.js",
+      "sha256": "6b67361a9dbc1d94b84164068024cc5e003408a176ec0d02eaa24b77eabcb373",
+      "size": 4196
+    },
+    {
+      "path": "src/domain/notifications.js",
+      "sha256": "fd604a81b6165fe436b78b80a38addcf48ad9e0a0b8fc4ef9bd1970b2e895a42",
+      "size": 3706
+    },
+    {
+      "path": "src/domain/personal-events.js",
+      "sha256": "1968cfbe00731e93deb0038466bc52bc965eeb368d38c335bbc7be697a0b2e4c",
+      "size": 1344
+    },
+    {
+      "path": "src/domain/planner.js",
+      "sha256": "4ee99123bff94532459743f540df9dd6b1d868f4f0715ebc7e562d7ebbfc5f48",
+      "size": 7531
+    },
+    {
+      "path": "src/domain/recommendation-windows.js",
+      "sha256": "cb197174272be2ae7c3adaa63f1907bebe4355794899a10428169b26805dfb7b",
+      "size": 1286
+    },
+    {
+      "path": "src/domain/schedule.js",
+      "sha256": "f3194141bdd038a55ebbb28defb2bd1bf32a216374987faf3712785b29d0449c",
+      "size": 1898
+    },
+    {
+      "path": "src/domain/status-plan.js",
+      "sha256": "7d87de851ef9c8e1888d82dccb76c2cc96a1b31d225040a4e40c7abc156440a3",
+      "size": 1400
+    },
+    {
+      "path": "src/domain/study.js",
+      "sha256": "1b49be6f3e635de9f0b075fce13b362a808de75769a27fa36aaf3c942999e5b5",
+      "size": 4584
+    },
+    {
+      "path": "src/domain/task-repeat.js",
+      "sha256": "2d29f0b3f33f693c248f17737ee25e0911df65a11a3f9183076c355262c22224",
+      "size": 1579
+    },
+    {
+      "path": "src/import/clarifications.js",
+      "sha256": "759ae20501cc06c05f4fb8a33555694e0e7ef4ef4be2c4f3f7754754c0db2a68",
+      "size": 1329
+    },
+    {
+      "path": "src/import/kinds.js",
+      "sha256": "dd440b2580528bee2a6c5ee349b866daf6ad5d39e7e900be78c4c304c02f7f30",
+      "size": 2021
+    },
+    {
+      "path": "src/import/mipt.js",
+      "sha256": "ffe5a4faeb188661ffea4cbd51564b9d81981e69c61f80b578580991ff9ed5b1",
+      "size": 18811
+    },
+    {
+      "path": "src/import/review.js",
+      "sha256": "182442d0278443bda489d8703d80b812b079d06c616cf0f1dea2ff2fc1ea7631",
+      "size": 799
+    },
+    {
+      "path": "src/import/workbook.js",
+      "sha256": "ff95eede43a3e465a2c65f64487438d1a2b1d87bca7c4947b6e47fd9b8ab1926",
+      "size": 2033
+    },
+    {
+      "path": "src/import/xlsx.js",
+      "sha256": "64b7966f1086025815b8237b9a87c680c0deafd8f9f45b955feb714214d086ae",
+      "size": 4005
+    },
+    {
+      "path": "src/individual-ui.js",
+      "sha256": "9b34a542b49e3c8100f7fda5a32010d4b703bde2d1fb78bcffa9575ac0a0b0bc",
+      "size": 15572
+    },
+    {
+      "path": "src/modal-interaction.js",
+      "sha256": "48a75144cfedef311000a0f561e47ed0efeb2fb1cab5c6b3ddf0f4fcf0630eec",
+      "size": 1368
+    },
+    {
+      "path": "src/platform/export.js",
+      "sha256": "2c6147aeae27aa189176c7028830e8f8ee180361fd2a57f1a48321139e8298ee",
+      "size": 741
+    },
+    {
+      "path": "src/platform/notifications.js",
+      "sha256": "5c9a0a8dd009aa60662437d561281207e865c247baad60d9e188669e152a48a1",
+      "size": 5740
+    },
+    {
+      "path": "src/platform/time-picker.js",
+      "sha256": "4107393cfdc46c9b7d3736563b76c9fa30e2e97fc97fa1bdbe0121c18cab0254",
+      "size": 1170
+    },
+    {
+      "path": "src/print-week.js",
+      "sha256": "23d0e7451f71abc088a2fd5c9d77f0b2b15f59eb1761d29cb2bd87d823c4d9fd",
+      "size": 1215
+    },
+    {
+      "path": "src/sources.js",
+      "sha256": "370fb970a9b23d8a5a9eecaa53a8122d9a7ca5ceb608949e6786e900e5f07ac5",
+      "size": 2583
+    },
+    {
+      "path": "src/storage.js",
+      "sha256": "19675f6e9dc34fbdc162d921c23282b6d2dcb2a86b3d85792f4108c382c2dca0",
+      "size": 9487
+    },
+    {
+      "path": "src/study-ui.js",
+      "sha256": "0da33bad1f70999c2ad605a48206acacbf8a45ea748e182f0abab2e0ecd03cbc",
+      "size": 11423
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "10369555dc202bbd14315aa5f454ba5b84978d905bcc9df8af2111605b04e3d7",
+      "size": 36405
+    },
+    {
+      "path": "src/task-view.js",
+      "sha256": "fd6508fafdf7cc5e32aab0beeea7859d3a462fd62932ab6f163e8dfead075041",
+      "size": 894
+    },
+    {
+      "path": "src/week-viewport.js",
+      "sha256": "03cbbbaa6da85b00df669da9b29a9a4943a6d2a7233434b35552a4d6a85efff2",
+      "size": 3659
+    },
+    {
+      "path": "src/workspace.css",
+      "sha256": "7bea263fb806dbb67bf3e86063e559777db9d9a2bc08f351b3fdc5a8ad20f1c7",
+      "size": 17745
+    },
+    {
+      "path": "sw.js",
+      "sha256": "247f950dd23776340f9e89119634a09d3ac30b386d54fdb27d92ef309c180d9e",
+      "size": 3172
+    },
+    {
+      "path": "vendor/cpexcel.full.mjs",
+      "sha256": "7a7bba23b6b6f23b5c69fbb631f78d1d455f74b57e4aa54e9a2f81a8ab844964",
+      "size": 472893
+    },
+    {
+      "path": "vendor/JSZip-LICENSE.md",
+      "sha256": "566c953c6090b1218ca6217dd7359d45dde46581968586dc607d59a78af6a9c4",
+      "size": 33753
+    },
+    {
+      "path": "vendor/jszip.min.js",
+      "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
+      "size": 97630
+    },
+    {
+      "path": "vendor/README.md",
+      "sha256": "c754e86a44104585b58fca6738cdf9dc50a7a72a05691995241ee51f5d56cd65",
+      "size": 481
+    },
+    {
+      "path": "vendor/SheetJS-LICENSE.txt",
+      "sha256": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64",
+      "size": 11355
+    },
+    {
+      "path": "vendor/xlsx.mjs",
+      "sha256": "1a0fb062ee9781b13f6687371b202aaefc53b6ce55b530c027e01f9c087b77db",
+      "size": 1008308
+    }
+  ]
+}

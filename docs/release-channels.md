@@ -5,16 +5,16 @@ The owner authorized promotion and the additional Betha release channel on 2026-
 | Channel | PWA | Android identity | Version |
 | --- | --- | --- | --- |
 | Stable, recommended | https://fedotovskiilev.github.io/Setka/ | `io.setka.app.release` | 0.4.0 |
-| Betha, release candidate | https://fedotovskiilev.github.io/Setka/betha/ | `io.setka.app.betha` | 0.5.0-betha.1 |
-| Unstable, development | https://fedotovskiilev.github.io/Setka/unstable/ | `io.setka.app.unstable` | 0.5.0-unstable.1 |
+| Betha, reviewed additions | https://fedotovskiilev.github.io/Setka/betha/ | `io.setka.app.betha` | 0.5.0-betha.2 |
+| Unstable, requested fixes | https://fedotovskiilev.github.io/Setka/unstable/ | `io.setka.app.unstable` | 0.5.0-unstable.2 |
 
 ## Snapshots and publishing
 
 `release-channels.json` is the source of channel versions and Android version codes. `package.json` identifies the development checkout. A normal `npm run build` produces Unstable. Set `SETKA_CHANNEL=stable` or `betha` for the corresponding build. Unknown channels and mismatched prerelease names are rejected. `channel.json` records the actual checkout commit, version and channel.
 
-Pages checks out `v<stable version>` and `v<betha version>` independently, installs locked dependencies, and builds each tagged application. Unstable is built from main. Official MIPT data is refreshed every six hours and copied into all three builds; main application code never replaces a tagged snapshot. One combined artifact is deployed, serialized by `pages-channels`. Failed checks leave the previous site available. Pull requests build all three from the candidate checkout for preview/isolation checks and cannot deploy.
+The current owner direction freezes Stable 0.4.0 byte-for-byte. Pages restores its verified public snapshot from `release-snapshots/`, including its source data and service worker; it does not rebuild Stable or refresh its feed. Betha is built from `v<betha version>` and Unstable from main. Official MIPT data is refreshed for the two experimental channels. Betha contains all requested Unstable changes plus channel-specific settings navigation/search, draft retention and subject-to-timer shortcuts. One combined artifact is deployed, serialized by `pages-channels`; a final per-file hash comparison rejects any Stable change. Failed checks leave the previous site available. Pull requests cannot deploy.
 
-`node scripts/assemble-channels.mjs _stable _betha` verifies the independently built metadata/tag commits and assembles Stable at the root plus two child directories. With no arguments it builds all three locally from the current checkout, for testing only. Start `node server.mjs` with `BASE_PATH=/Setka/` and `PORT=4175` to test the combined site.
+`node scripts/assemble-channels.mjs --frozen-stable _betha` verifies Betha's tag identity, restores the frozen Stable tree and assembles the two child channels. With no arguments it previews the current experimental builds alongside that same frozen Stable. Start `node server.mjs` with `BASE_PATH=/Setka/` and `PORT=4175` to test the combined site. Never replace the Stable snapshot without a new explicit Stable promotion request.
 
 To release, update the channel version and increment that channel's Android code, write release notes, verify the candidate, then create the matching `v...` tag. Run the Android workflow on the candidate branch with its channel input before tagging when desired. Both API 35 and 36 checks must pass before a signed APK is published. Stable releases become Latest; Betha and Unstable use prerelease and `latest=false`. Main pushes produce CI artifacts rather than published releases. Do not move published release tags; use a new version for a repair.
 
