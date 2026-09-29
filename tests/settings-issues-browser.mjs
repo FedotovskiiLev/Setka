@@ -86,8 +86,12 @@ try{
   assert.equal(await opener.count(),1,'time input has an adjacent wheel button');
   const savedBefore=await page.evaluate(key=>localStorage.getItem(key),storageKey);
   const original=await quietStart.inputValue();
+  const originalInput=await quietStart.elementHandle();
   await opener.focus();await page.keyboard.press('Space');
   const wheelDialog=page.locator('dialog.time-picker-dialog');await wheelDialog.waitFor({state:'visible'});
+  await page.clock.runFor(61_000);
+  assert.equal(await originalInput.evaluate(e=>e.isConnected),true,'background refresh retains the original native time input while the standalone wheel is open');
+  assert.equal(await quietStart.inputValue(),original,'background refresh preserves the open time-picker draft');
   if(page.viewportSize().width===1440){
     const wheelLayout=await wheelDialog.evaluate(e=>({height:e.getBoundingClientRect().height,width:e.getBoundingClientRect().width,documentWidth:document.documentElement.scrollWidth,viewportWidth:innerWidth}));
     assert.ok(wheelLayout.height<650,`wheel dialog should stay compact at desktop: ${wheelLayout.height}px`);

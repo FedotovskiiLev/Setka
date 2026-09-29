@@ -16,17 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Read approved release snapshots
+      - name: Read approved Betha tag
         id: versions
         run: |
-          node --input-type=module -e "import fs from 'node:fs'; const c=JSON.parse(fs.readFileSync('release-channels.json')); for(const k of ['stable','betha'])fs.appendFileSync(process.env.GITHUB_OUTPUT,k+'=v'+c[k].version+'\n');"
-      - name: Checkout Stable release snapshot
-        if: github.event_name != 'pull_request'
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.versions.outputs.stable }}
-          path: _stable
-          fetch-depth: 0
+          node --input-type=module -e "import fs from 'node:fs'; const c=JSON.parse(fs.readFileSync('release-channels.json')); fs.appendFileSync(process.env.GITHUB_OUTPUT,'betha=v'+c.betha.version+'\n');"
       - name: Checkout Betha release snapshot
         if: github.event_name != 'pull_request'
         uses: actions/checkout@v4
@@ -39,19 +32,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm ci --prefix _stable
-        if: github.event_name != 'pull_request'
       - run: npm ci --prefix _betha
         if: github.event_name != 'pull_request'
       - name: Check official MIPT sources
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: npm run sources:refresh
-      - name: Build release snapshots with the same official data
+      - name: Build Betha release snapshot with current official data
         if: github.event_name != 'pull_request'
         run: |
-          cp -a data/. _stable/data/
           cp -a data/. _betha/data/
-          (cd _stable && SETKA_CHANNEL=stable npm run build)
           (cd _betha && SETKA_CHANNEL=betha npm run build)
       - run: npm test
       - run: npm run build
@@ -78,6 +67,8 @@ jobs:
           node tests/planning-04-browser.mjs
           node tests/individual-browser.mjs
           node tests/workspace-browser.mjs
+          node tests/settings-issues-browser.mjs
+          node tests/study-dashboard-browser.mjs
       - name: Assemble and verify channel isolation in one browser profile
         env:
           TEST_URL: http://localhost:4175/Setka/
@@ -86,9 +77,12 @@ jobs:
           if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
             node scripts/assemble-channels.mjs
           else
-            node scripts/assemble-channels.mjs _stable _betha
+            node scripts/assemble-channels.mjs --frozen-stable _betha
           fi
           node tests/channels-browser.mjs
+          TEST_CHANNEL=betha TEST_URL="${TEST_URL}betha/" node tests/settings-issues-browser.mjs
+          TEST_CHANNEL=betha TEST_URL="${TEST_URL}betha/" node tests/study-dashboard-browser.mjs
+          TEST_URL="${TEST_URL}betha/" node tests/betha-onboarding-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
