@@ -187,7 +187,7 @@ public class SetkaInstrumentedTest {
   }
   private boolean clickNodeWithText(AccessibilityNodeInfo node,String title){
     if(node==null)return false;
-    if(node.getText()!=null&&title.equals(node.getText().toString().trim())){
+    if(node.getText()!=null&&title.equalsIgnoreCase(node.getText().toString().trim())){
       for(AccessibilityNodeInfo target=node;target!=null;target=target.getParent())if(target.isEnabled()&&target.isClickable())return target.performAction(AccessibilityNodeInfo.ACTION_CLICK);
     }
     for(int i=0;i<node.getChildCount();i++)if(clickNodeWithText(node.getChild(i),title))return true;

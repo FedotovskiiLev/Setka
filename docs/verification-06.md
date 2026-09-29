@@ -15,4 +15,8 @@ Issue evidence:
 | #6 task flows / polish | Repeats, deadline reminders, planned-work edits, personal exceptions; desktop More geometry corrected. |
 | #7 time wheels | Existing native Android NumberPicker plus browser wheel fallback, cancellation/focus/keyboard/scroll/form preservation checks. |
 
-Final local and published run evidence is recorded below when complete.
+Local verification: npm ci and both experimental builds passed; all 83 domain/import/storage tests passed. Browser checks cover dismissal/reload, the original timer flows, the expanded dashboard, native-input drafts and browser wheels, a 61-second refresh while a wheel is open, responsive settings and Betha onboarding. Viewports include 1440, 1024, 320, 390 and 844px landscape where relevant. Onboarding tests include grant/reload, denial/retry, unsupported APIs, save failures, explicit permission requests and reduced motion.
+
+Before deployment, all 65 public Stable files matched the frozen manifest by size and SHA-256 at the canonical `/Setka/` path. The lowercase `/setka/` path returned 404 during verification; links use the working case-sensitive path.
+
+The first new native wheel test exposed a case-sensitive test locator: Android renders its buttons as `ОТМЕНА`/`ВЫБРАТЬ`. The test now matches their labels without case sensitivity. The picker itself had returned the expected scrolled hour/minute in the failure evidence. Final signed emulator gates and publication are recorded below after completion.
